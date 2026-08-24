@@ -164,7 +164,10 @@ a {
 }
 .hero {
   min-height: 540px;
-  background: linear-gradient(125deg, #083e31, #0b7a5c 48%, #17a67f);
+    /* gradient overlay + local background image (place your image at assets/himalayas.jpg) */
+    background-image: linear-gradient(125deg, rgba(8,62,49,0.85), rgba(11,122,92,0.6) 48%, rgba(23,166,127,0.45)), url('assets/himalayas.jpg');
+    background-size: cover;
+    background-position: center;
   color: white;
   padding: 72px max(22px, calc((100vw - 1240px) / 2));
   display: grid;
@@ -401,7 +404,7 @@ a {
 }
 .save-btn {
   border: 0;
-  background: #fffdf;
+  background: rgba(255, 255, 255, 0.93);
   border-radius: 50%;
   width: 34px;
   height: 34px;
