@@ -87,13 +87,30 @@ function render(){
 function renderHome(){
   const rec=TRAILS.filter(t=>t.tags.some(x=>state.user.interests.includes(x))).slice(0,4);
   const people=USERS.filter(u=>u.interests.some(x=>state.user.interests.includes(x))).sort((a,b)=>b.match-a.match).slice(0,4);
-  app.innerHTML=`<section class="hero">
-    <div class="hero-copy"><span class="pill">🇳🇵 Made for Nepal's trails</span><h1>Find your path.<br><em>Find your sathi.</em></h1><p>Discover trekking routes, meet compatible hikers, create groups and plan your next Himalayan adventure — all in one place.</p>
-    <div class="hero-search"><span>⌕</span><input id="home-search" placeholder="Search trails, districts, mountains..." onkeydown="if(event.key==='Enter')goExplore(this.value)"><button onclick="goExplore(document.getElementById('home-search').value)">Explore</button></div>
-    <div class="hero-stats"><span><strong>120+</strong> trails</span><span><strong>2.4k</strong> trekkers</span><span><strong>38</strong> active groups</span></div></div>
+  app.innerHTML=`
+  <section class="hero">
+    <div class="hero-inner animate-up">
+      <div class="hero-content">
+        <span class="pill">NEPAL TREKKING COMMUNITY</span>
+        <h1 class="hero-title">Find your <span class="accent">trail people.</span></h1>
+        <p class="hero-desc">Discover Nepal's best hikes, find companions who match your pace and dates, and plan safer group adventures.</p>
+        <div class="hero-ctas">
+          <a href="#explore" class="btn primary btn-lg">Explore trails →</a>
+          <a href="#signup" class="btn light btn-lg">Create your private profile</a>
+        </div>
+      </div>
+      <div class="hero-feature-card animate-fade">
+        <div class="feature-item"><span class="feature-icon">🔒</span><div><b>Private by design</b><small>Public profiles use aliases, not email addresses.</small></div></div>
+        <div class="feature-item"><span class="feature-icon">📊</span><div><b>Explainable matching</b><small>See exactly why someone is recommended.</small></div></div>
+        <div class="feature-item"><span class="feature-icon">☁️</span><div><b>Live weather</b><small>7-day forecasts for each destination.</small></div></div>
+      </div>
+    </div>
   </section>
-  <section class="section"><div class="section-head"><div><span class="eyebrow">PERSONALIZED</span><h2>Recommended for you</h2><p>Trails matched to your interests and experience.</p></div><a href="#explore" class="text-link">View all →</a></div><div class="card-grid">${rec.map(trailCard).join("")}</div></section>
+
+  <section class="section"><div class="section-head"><div><span class="eyebrow">PERSONALIZED</span><h2>Recommended for you</h2><p>Trails matched to your interests and experience.</p></div><a href="#explore" class="text-link">View all →</a></div><div class="card-grid recommended-grid">${rec.map(trailCard).join("")}</div></section>
+
   <section class="section tinted"><div class="section-head"><div><span class="eyebrow">SOCIAL</span><h2>Find trekking partners</h2><p>Connect with people who share your pace, language and interests.</p></div><a href="#groups" class="text-link">See more →</a></div><div class="people-grid">${people.map(userCard).join("")}</div></section>
+
   <section class="section"><div class="feature-banner"><div><span class="eyebrow">PLAN TOGETHER</span><h2>Not sure where to start?</h2><p>Set your hiking preferences and Trek Sathi will rank trails and companions around your style.</p><a href="#preferences" class="btn light">Tune my preferences</a></div><div class="feature-icons"><span>🥾</span><span>🗺️</span><span>🤝</span></div></div></section>`;
 }
 
