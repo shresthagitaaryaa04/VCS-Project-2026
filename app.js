@@ -18,6 +18,7 @@ const state = {
 const app = document.getElementById("app");
 const modalRoot = document.getElementById("modal-root");
 const toastRoot = document.getElementById("toast-root");
+const NPR_PER_USD = 140;
 
 function persist(){
   localStorage.setItem("hikeSathiUser", JSON.stringify(state.user));
@@ -29,6 +30,11 @@ function toast(msg,type="success"){
   toastRoot.appendChild(el); setTimeout(()=>el.remove(),2800);
 }
 function initials(name){ return name.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase(); }
+function estimatedUSD(npr){
+  const usd = npr / NPR_PER_USD;
+  const rounded = Math.round(usd / 50) * 50;
+  return rounded.toLocaleString();
+}
 function route(){ return location.hash.replace("#","").split("/")[0] || "home"; }
 function isAuthRoute(){ return ["login","signup"].includes(route()); }
 
@@ -42,7 +48,7 @@ function trailCard(t){
       <div class="eyebrow">${esc(t.province)} · ${esc(t.district)}</div>
       <h3>${esc(t.name)}</h3>
       <p class="muted clamp">${esc(t.desc)}</p>
-      <div class="trail-meta"><span>⏱ ${t.days} day${t.days>1?"s":""}</span><span>↗ ${t.altitude}</span><span>★ ${t.rating}</span></div>
+      <div class="trail-meta"><span>⏱ ${t.days} day${t.days>1?"s":""}</span><span>↗ ${t.altitude}</span><span>★ ${t.rating}</span><span class="trail-cost">NPR ${t.cost.toLocaleString()} · USD ${estimatedUSD(t.cost)}</span></div>
       <div class="tag-row">${t.tags.slice(0,3).map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div>
     </div>
   </article>`;
@@ -126,11 +132,11 @@ function renderTrail(){
   app.innerHTML=`<section class="trail-detail"><button class="back-btn" onclick="history.back()">← Back to explore</button>
   <div class="trail-hero-detail"><img src="${t.image}" alt="${esc(t.name)}"><div class="trail-overlay"><span class="pill">${esc(t.province)} · ${esc(t.district)}</span><h1>${esc(t.name)}</h1><div>${badge(t.difficulty,t.difficulty.toLowerCase())} <span class="rating">★ ${t.rating} · ${t.reviews} reviews</span></div></div></div>
   <div class="detail-grid"><div class="detail-main">
-    <div class="info-strip"><div><small>Duration</small><b>${t.days} days</b></div><div><small>Distance</small><b>${t.distance}</b></div><div><small>Max altitude</small><b>${t.altitude}</b></div><div><small>Est. cost</small><b>NPR ${t.cost.toLocaleString()}</b></div></div>
+    <div class="info-strip"><div><small>Duration</small><b>${t.days} days</b></div><div><small>Distance</small><b>${t.distance}</b></div><div><small>Max altitude</small><b>${t.altitude}</b></div><div><small>Est. cost</small><b>NPR ${t.cost.toLocaleString()}<br>USD ${estimatedUSD(t.cost)}</b></div></div>
     <section class="content-card"><div class="section-head compact"><div><h2>About this trail</h2><p>${esc(t.desc)}</p></div><button class="btn ${state.user.saved.includes(t.id)?"secondary":"primary"}" onclick="toggleSave(${t.id})">${state.user.saved.includes(t.id)?"♥ Saved":"♡ Save trail"}</button></div><div class="tag-row">${t.tags.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div></section>
     <section class="content-card"><div class="section-head compact"><div><h2>Route map</h2><p>${esc(t.start)} → ${esc(t.end)} · approximate route overview</p></div></div><div id="trail-map"></div></section>
     <section class="content-card"><h2>Elevation & itinerary</h2><div class="elevation"><span style="height:28%"></span><span style="height:45%"></span><span style="height:38%"></span><span style="height:64%"></span><span style="height:76%"></span><span style="height:92%"></span><span style="height:71%"></span><span style="height:98%"></span><span style="height:80%"></span><span style="height:58%"></span></div><div class="day-list"><div><b>Day 1</b> ${esc(t.start)} → Forest village</div><div><b>Middle days</b> Gradual ascent, viewpoints and local teahouses</div><div><b>Final day</b> ${esc(t.end)} → return transfer</div></div></section>
-    <section class="content-card"><h2>Weather & preparation</h2><div class="weather-grid"><div>☀️ <b>Morning</b><small>Clear · 8°C</small></div><div>⛅ <b>Afternoon</b><small>Partly cloudy · 16°C</small></div><div>🌙 <b>Night</b><small>Cold · 4°C</small></div></div><p class="muted">Weather changes quickly in the mountains. Check local conditions before departure and carry appropriate layers, water and navigation essentials.</p></section>
+    <section class="content-card"><h2>Weather & preparation</h2><div class="weather-grid"><div><i class="fa-solid fa-cloud-sun" aria-hidden="true"></i><b>Morning</b><small>Clear · 8°C</small></div><div><i class="fa-solid fa-sun" aria-hidden="true"></i><b>Day</b><small>Partly cloudy · 16°C</small></div><div><i class="fa-solid fa-moon" aria-hidden="true"></i><b>Night</b><small>Cold · 4°C</small></div></div><p class="muted">Weather changes quickly in the mountains. Check local conditions before departure and carry appropriate layers, water and navigation essentials.</p></section>
   </div><aside class="detail-side"><div class="content-card sticky"><h3>Quick facts</h3><dl><dt>Start</dt><dd>${esc(t.start)}</dd><dt>End</dt><dd>${esc(t.end)}</dd><dt>Trail type</dt><dd>${esc(t.type)}</dd><dt>Experience</dt><dd>${esc(t.difficulty)}</dd><dt>Accommodation</dt><dd>Teahouse / lodge</dd></dl><button class="btn primary full" onclick="createGroupForTrail(${t.id})">Create a group</button><button class="btn secondary full" onclick="goExplore('${esc(t.name)}')">Find companions</button></div></aside></div></section>`;
   setTimeout(()=>initMap(t),50);
 }

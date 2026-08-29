@@ -329,15 +329,15 @@ a {
 .trail-top {
   position: absolute;
   z-index: 1;
-  top: 11px;
-  left: 11px;
-  right: 11px;
+  top: 16px;
+  left: 16px;
+  right: 16px;
   display: flex;
   justify-content: space-between;
 }
 .save-btn {
   border: 0;
-  background: #fffdf;
+  background: #fffdfd;
   border-radius: 50%;
   width: 34px;
   height: 34px;
@@ -370,12 +370,16 @@ a {
 }
 .trail-meta {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   font-size: 11px;
   color: var(--muted);
   padding: 12px 0;
   border-top: 1px solid var(--line);
   margin-top: 12px;
+}
+.trail-cost {
+  flex-basis: 100%;
 }
 .tag-row {
   display: flex;
@@ -393,7 +397,7 @@ a {
 .badge {
   font-size: 10px;
   font-weight: 800;
-  padding: 5px 8px;
+  padding: 10px 14px;  /* Increased horizontal padding */
   border-radius: 999px;
   display: inline-block;
   background: #fff;
