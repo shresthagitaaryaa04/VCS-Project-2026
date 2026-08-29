@@ -213,7 +213,7 @@ a {
   bottom: -66px;
 }
 .feature-item { flex: 1; padding: 8px 12px; display:flex; gap:12px; align-items:flex-start; }
-.feature-icon { font-size: 20px; display:inline-block; width:34px; height:34px; background:#f0fbf7; color:var(--green); border-radius:10px; display:grid; place-items:center; margin-top:4px; }
+.feature-icon { font-size: 16px; display:inline-block; width:34px; height:34px; background:#f0fbf7; color:var(--green); border-radius:10px; display:grid; place-items:center; margin-top:4px; }
 .feature-item b { display:block; font-weight:800; margin-bottom:6px; }
 .feature-item small { color: #566b63; }
 
@@ -397,7 +397,7 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #0003, transparent 45%, #0002);
+  
 }
 .trail-top {
   position: absolute;
@@ -1724,3 +1724,192 @@ a {
     display: none;
   }
 }
+
+
+/* Groups page spacing and difficulty badges */
+#group-content {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 22px 70px;
+}
+.group-grid {
+  align-items: stretch;
+}
+.group-card {
+  padding: 22px;
+  min-width: 0;
+}
+.group-card-top {
+  align-items: flex-start;
+}
+.group-card-top > div:first-child {
+  min-width: 0;
+}
+.group-card .badge {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 7px 11px;
+  line-height: 1.2;
+}
+.group-card h3 {
+  line-height: 1.3;
+}
+.group-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+}
+.group-meta i {
+  color: var(--green);
+  margin-right: 4px;
+}
+
+/* Notification sidebar */
+.notification-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 30, 24, 0.16);
+  z-index: 149;
+}
+.notification-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(390px, 92vw);
+  height: 100vh;
+  background: #fff;
+  border-left: 1px solid var(--line);
+  box-shadow: -16px 0 45px rgba(21, 48, 39, 0.12);
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+}
+.notification-panel.open {
+  transform: translateX(0);
+}
+.notification-head {
+  padding: 26px 22px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--line);
+}
+.notification-head h2 {
+  font: 800 23px Manrope;
+  margin: 5px 0 0;
+}
+.notification-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 9px;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+.notification-list {
+  overflow-y: auto;
+  flex: 1;
+}
+.notification-item {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 17px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.notification-item.unread {
+  background: #f3faf7;
+}
+.notification-item.unread::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 19px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #e05252;
+}
+.notification-icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--green);
+}
+.notification-copy {
+  min-width: 0;
+  padding-right: 12px;
+}
+.notification-copy b {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.notification-copy p {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.notification-copy small {
+  color: #8a9893;
+  font-size: 10px;
+}
+.notification-read {
+  margin: 14px 22px 20px;
+}
+.notification-empty {
+  padding: 55px 25px;
+  text-align: center;
+  color: var(--muted);
+}
+.notification-empty b {
+  color: var(--ink);
+}
+.notification-empty p {
+  font-size: 12px;
+}
+.notif-dot.hidden {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  #group-content {
+    padding: 0 16px 50px;
+  }
+  .group-card {
+    padding: 18px;
+  }
+  .notification-panel {
+    width: min(380px, 94vw);
+  }
+}
+
+
+/* Font Awesome icon styling */
+.feature-icon i,
+.filter-note > i,
+.person-stats > span i,
+.profile-details i,
+.interest i,
+.weather-emoji i,
+.empty-icon i {
+  color: var(--green);
+}
+.filter-note > i { margin-right: 4px; }
+.profile-details i { width: 14px; text-align: center; margin-right: 4px; }
+.interest i { font-size: 22px; }
+.empty-icon { font-size: 35px; display: block; margin-bottom: 8px; }
+.save-btn i { pointer-events: none; }
+.weather-emoji { color: var(--green); }
+.auth-logo img { width: 100%; height: 100%; object-fit: contain; }
+.brand-mark { object-fit: cover; }
