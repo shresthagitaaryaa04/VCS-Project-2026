@@ -890,21 +890,29 @@ a {
 }
 .weather-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  align-items: center;
 }
-.weather-grid div {
-  padding: 14px;
-  background: #f6f9f8;
-  border-radius: 12px;
+.weather-grid > .empty { padding: 10px; color: var(--muted); }
+.weather-day {
+  text-align: center;
+  padding: 8px 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 12px;
 }
-.weather-grid b,
-.weather-grid small {
-  display: block;
-  margin-top: 5px;
-}
-.weather-grid small {
-  color: var(--muted);
+.weather-emoji { font-size: 20px; margin: 4px 0; line-height:1; }
+.weather-temps b { font-size: 14px; display:block; color: var(--ink); }
+.weather-temps small { color: var(--muted); }
+
+/* Keep single-row layout on narrow screens; allow horizontal scrolling if needed */
+.weather-grid-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+
+@media (max-width: 480px) {
+  .weather-emoji { font-size: 18px; }
+  .weather-temps b { font-size: 13px; }
 }
 
 .tabs {
