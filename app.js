@@ -8,8 +8,8 @@ const DEFAULT_USER = {
 };
 
 const state = {
-  user: JSON.parse(localStorage.getItem("hikeSathiUser") || "null") || DEFAULT_USER,
-  loggedIn: JSON.parse(localStorage.getItem("hikeSathiLoggedIn") || "false"),
+  user: JSON.parse(localStorage.getItem("trekSathiUser") || "null") || DEFAULT_USER,
+  loggedIn: JSON.parse(localStorage.getItem("trekSathiLoggedIn") || "false"),
   activeTrail: null,
   selectedConversation: 101,
   map: null
@@ -21,8 +21,8 @@ const toastRoot = document.getElementById("toast-root");
 const NPR_PER_USD = 140;
 
 function persist(){
-  localStorage.setItem("hikeSathiUser", JSON.stringify(state.user));
-  localStorage.setItem("hikeSathiLoggedIn", JSON.stringify(state.loggedIn));
+  localStorage.setItem("trekSathiUser", JSON.stringify(state.user));
+  localStorage.setItem("trekSathiLoggedIn", JSON.stringify(state.loggedIn));
 }
 function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
 function toast(msg,type="success"){
@@ -87,14 +87,31 @@ function render(){
 function renderHome(){
   const rec=TRAILS.filter(t=>t.tags.some(x=>state.user.interests.includes(x))).slice(0,4);
   const people=USERS.filter(u=>u.interests.some(x=>state.user.interests.includes(x))).sort((a,b)=>b.match-a.match).slice(0,4);
-  app.innerHTML=`<section class="hero">
-    <div class="hero-copy"><span class="pill">🇳🇵 Made for Nepal's trails</span><h1>Find your path.<br><em>Find your sathi.</em></h1><p>Discover trekking routes, meet compatible hikers, create groups and plan your next Himalayan adventure — all in one place.</p>
-    <div class="hero-search"><span>⌕</span><input id="home-search" placeholder="Search trails, districts, mountains..." onkeydown="if(event.key==='Enter')goExplore(this.value)"><button onclick="goExplore(document.getElementById('home-search').value)">Explore</button></div>
-    <div class="hero-stats"><span><strong>120+</strong> trails</span><span><strong>2.4k</strong> trekkers</span><span><strong>38</strong> active groups</span></div></div>
+  app.innerHTML=`
+  <section class="hero">
+    <div class="hero-inner animate-up">
+      <div class="hero-content">
+        <span class="pill">NEPAL TREKKING COMMUNITY</span>
+        <h1 class="hero-title">Find your <span class="accent">trail people.</span></h1>
+        <p class="hero-desc">Discover Nepal's best hikes, find companions who match your pace and dates, and plan safer group adventures.</p>
+        <div class="hero-ctas">
+          <a href="#explore" class="btn primary btn-lg">Explore trails →</a>
+          <a href="#signup" class="btn light btn-lg">Create your private profile</a>
+        </div>
+      </div>
+      <div class="hero-feature-card animate-fade">
+        <div class="feature-item"><span class="feature-icon">🔒</span><div><b>Private by design</b><small>Public profiles use aliases, not email addresses.</small></div></div>
+        <div class="feature-item"><span class="feature-icon">📊</span><div><b>Explainable matching</b><small>See exactly why someone is recommended.</small></div></div>
+        <div class="feature-item"><span class="feature-icon">☁️</span><div><b>Live weather</b><small>7-day forecasts for each destination.</small></div></div>
+      </div>
+    </div>
   </section>
-  <section class="section"><div class="section-head"><div><span class="eyebrow">PERSONALIZED</span><h2>Recommended for you</h2><p>Trails matched to your interests and experience.</p></div><a href="#explore" class="text-link">View all →</a></div><div class="card-grid">${rec.map(trailCard).join("")}</div></section>
+
+  <section class="section"><div class="section-head"><div><span class="eyebrow">PERSONALIZED</span><h2>Recommended for you</h2><p>Trails matched to your interests and experience.</p></div><a href="#explore" class="text-link">View all →</a></div><div class="card-grid recommended-grid">${rec.map(trailCard).join("")}</div></section>
+
   <section class="section tinted"><div class="section-head"><div><span class="eyebrow">SOCIAL</span><h2>Find trekking partners</h2><p>Connect with people who share your pace, language and interests.</p></div><a href="#groups" class="text-link">See more →</a></div><div class="people-grid">${people.map(userCard).join("")}</div></section>
-  <section class="section"><div class="feature-banner"><div><span class="eyebrow">PLAN TOGETHER</span><h2>Not sure where to start?</h2><p>Set your hiking preferences and Hike Sathi will rank trails and companions around your style.</p><a href="#preferences" class="btn light">Tune my preferences</a></div><div class="feature-icons"><span>🥾</span><span>🗺️</span><span>🤝</span></div></div></section>`;
+
+  <section class="section"><div class="feature-banner"><div><span class="eyebrow">PLAN TOGETHER</span><h2>Not sure where to start?</h2><p>Set your hiking preferences and Trek Sathi will rank trails and companions around your style.</p><a href="#preferences" class="btn light">Tune my preferences</a></div><div class="feature-icons"><span>🥾</span><span>🗺️</span><span>🤝</span></div></div></section>`;
 }
 
 function goExplore(q=""){ location.hash="#explore"+(q?`?q=${encodeURIComponent(q)}`:""); }
@@ -136,9 +153,9 @@ function renderTrail(){
     <section class="content-card"><div class="section-head compact"><div><h2>About this trail</h2><p>${esc(t.desc)}</p></div><button class="btn ${state.user.saved.includes(t.id)?"secondary":"primary"}" onclick="toggleSave(${t.id})">${state.user.saved.includes(t.id)?"♥ Saved":"♡ Save trail"}</button></div><div class="tag-row">${t.tags.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div></section>
     <section class="content-card"><div class="section-head compact"><div><h2>Route map</h2><p>${esc(t.start)} → ${esc(t.end)} · approximate route overview</p></div></div><div id="trail-map"></div></section>
     <section class="content-card"><h2>Elevation & itinerary</h2><div class="elevation"><span style="height:28%"></span><span style="height:45%"></span><span style="height:38%"></span><span style="height:64%"></span><span style="height:76%"></span><span style="height:92%"></span><span style="height:71%"></span><span style="height:98%"></span><span style="height:80%"></span><span style="height:58%"></span></div><div class="day-list"><div><b>Day 1</b> ${esc(t.start)} → Forest village</div><div><b>Middle days</b> Gradual ascent, viewpoints and local teahouses</div><div><b>Final day</b> ${esc(t.end)} → return transfer</div></div></section>
-    <section class="content-card"><h2>Weather & preparation</h2><div class="weather-grid"><div><i class="fa-solid fa-cloud-sun" aria-hidden="true"></i><b>Morning</b><small>Clear · 8°C</small></div><div><i class="fa-solid fa-sun" aria-hidden="true"></i><b>Day</b><small>Partly cloudy · 16°C</small></div><div><i class="fa-solid fa-moon" aria-hidden="true"></i><b>Night</b><small>Cold · 4°C</small></div></div><p class="muted">Weather changes quickly in the mountains. Check local conditions before departure and carry appropriate layers, water and navigation essentials.</p></section>
+    <section class="content-card"><h2>Weather & preparation</h2><div id="weather-grid" class="weather-grid"><div class="muted">Loading weather…</div></div><p class="muted">Weather changes quickly in the mountains. Check local conditions before departure and carry appropriate layers, water and navigation essentials.</p></section>
   </div><aside class="detail-side"><div class="content-card sticky"><h3>Quick facts</h3><dl><dt>Start</dt><dd>${esc(t.start)}</dd><dt>End</dt><dd>${esc(t.end)}</dd><dt>Trail type</dt><dd>${esc(t.type)}</dd><dt>Experience</dt><dd>${esc(t.difficulty)}</dd><dt>Accommodation</dt><dd>Teahouse / lodge</dd></dl><button class="btn primary full" onclick="createGroupForTrail(${t.id})">Create a group</button><button class="btn secondary full" onclick="goExplore('${esc(t.name)}')">Find companions</button></div></aside></div></section>`;
-  setTimeout(()=>initMap(t),50);
+  setTimeout(()=>{ initMap(t); fetchWeather(t.lat,t.lng).then(days=>renderWeatherGrid('weather-grid',days)); },50);
 }
 function routeId(){ return location.hash.split("/")[1]?.split("?")[0] || "1"; }
 function initMap(t){
@@ -149,6 +166,55 @@ function initMap(t){
   L.marker([t.lat,t.lng]).addTo(state.map).bindPopup(`<b>${esc(t.name)}</b><br>${esc(t.start)} → ${esc(t.end)}`).openPopup();
   const line=[[t.lat-.06,t.lng-.08],[t.lat-.025,t.lng-.02],[t.lat+.02,t.lng+.04],[t.lat+.05,t.lng+.08]];
   L.polyline(line,{color:"#0b7a5c",weight:4}).addTo(state.map);
+}
+
+// Simple weather cache to avoid repeated API calls
+state.weatherCache = state.weatherCache || {};
+
+function weatherCodeToEmoji(code){
+  // Open-Meteo/WMO codes simplified
+  if(code === 0) return '☀️';
+  if(code === 1 || code === 2) return '🌤️';
+  if(code === 3) return '☁️';
+  if(code >= 45 && code <= 48) return '🌫️';
+  if(code >= 51 && code <= 67) return '🌧️';
+  if((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return '🌨️';
+  if(code >= 80 && code <= 82) return '🌦️';
+  if(code >= 95) return '⛈️';
+  return '🌈';
+}
+
+async function fetchWeather(lat,lng){
+  const key = `${lat.toFixed(3)},${lng.toFixed(3)}`;
+  if(state.weatherCache[key]) return state.weatherCache[key];
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Weather API error');
+    const data = await res.json();
+    // take first 7 days
+    const days = (data.daily && data.daily.time || []).map((d,i)=>({
+      date: d,
+      max: data.daily.temperature_2m_max[i],
+      min: data.daily.temperature_2m_min[i],
+      precip: data.daily.precipitation_sum ? data.daily.precipitation_sum[i] : 0,
+      code: data.daily.weathercode ? data.daily.weathercode[i] : null
+    })).slice(0,7);
+    state.weatherCache[key] = days;
+    return days;
+  }catch(e){ console.warn('weather fetch failed',e); return null; }
+}
+
+function renderWeatherGrid(targetId, days){
+  const el = document.getElementById(targetId);
+  if(!el) return;
+  if(!days){ el.innerHTML = `<div class="empty"><p class="muted">Weather unavailable</p></div>`; return; }
+  el.innerHTML = days.map(d=>{
+    const dt = new Date(d.date);
+    const opts = { weekday: 'short' };
+    const dayName = dt.toLocaleDateString(undefined,opts);
+    return `<div class="weather-day"><small>${dayName}</small><div class="weather-emoji">${weatherCodeToEmoji(d.code)}</div><div class="weather-temps"><b>${Math.round(d.max)}°C</b><small>${Math.round(d.min)}°C</small></div><small class="muted">${d.precip?d.precip+' mm':''}</small></div>`;
+  }).join('');
 }
 
 function renderGroups(){
@@ -184,7 +250,7 @@ function createGroupForTrail(id){ createGroup(id); }
 function createGroup(preselect){
   modal(`<div class="modal-head"><h2>Create a hiking group</h2><button onclick="closeModal()">×</button></div><form onsubmit="submitGroup(event)" class="form-grid"><label>Group name<input name="name" required placeholder="e.g. Langtang Weekend Crew"></label><label>Trail<select name="trail">${TRAILS.map(t=>`<option ${t.id===preselect?"selected":""}>${esc(t.name)}</option>`).join("")}</select></label><label>Date<input type="date" name="date" required></label><label>Max members<select name="max"><option>6</option><option>8</option><option>10</option><option>15</option></select></label><label class="span-2">Description<textarea name="desc" placeholder="What is the group vibe?"></textarea></label><button class="btn primary span-2">Create group</button></form>`);
 }
-function submitGroup(e){ e.preventDefault(); const f=new FormData(e.target); GROUPS.unshift({id:Date.now(),name:f.get("name"),trail:f.get("trail"),date:f.get("date"),members:1,max:Number(f.get("max")),level:state.user.experience,owner:state.user.name,desc:f.get("desc")||"New Hike Sathi group.",avatar:initials(String(f.get("name")))}); closeModal(); toast("Group created successfully!"); renderGroups(); }
+function submitGroup(e){ e.preventDefault(); const f=new FormData(e.target); GROUPS.unshift({id:Date.now(),name:f.get("name"),trail:f.get("trail"),date:f.get("date"),members:1,max:Number(f.get("max")),level:state.user.experience,owner:state.user.name,desc:f.get("desc")||"New Trek Sathi group.",avatar:initials(String(f.get("name")))}); closeModal(); toast("Group created successfully!"); renderGroups(); }
 
 const DEMO_MESSAGES={
   101:[["Sujal Gurung","Hey Aarya! Are you still interested in Mardi this month?","09:41"],["Aarya Shrestha","Yes! I was thinking about the weekend group.","09:44"],["Sujal Gurung","Perfect. I can share the route and packing plan.","09:45"]],
@@ -210,7 +276,7 @@ function markCompleted(id){if(!state.user.completed.includes(id))state.user.comp
 
 function renderProfile(){
   const friends=USERS.filter(u=>state.user.friends.includes(u.id)), incoming=USERS.filter(u=>state.user.incoming.includes(u.id)), saved=TRAILS.filter(t=>state.user.saved.includes(t.id)), done=TRAILS.filter(t=>state.user.completed.includes(t.id));
-  app.innerHTML=`<section class="profile-cover"><div class="profile-identity"><div class="profile-avatar">${esc(state.user.initials)}</div><div><span class="pill">Hike Sathi member</span><h1>${esc(state.user.name)}</h1><p>${esc(state.user.province)} · ${esc(state.user.district)} · ${esc(state.user.experience)}</p></div></div><button class="btn light" onclick="editProfile()">Edit profile</button></section>
+  app.innerHTML=`<section class="profile-cover"><div class="profile-identity"><div class="profile-avatar">${esc(state.user.initials)}</div><div><span class="pill">Trek Sathi member</span><h1>${esc(state.user.name)}</h1><p>${esc(state.user.province)} · ${esc(state.user.district)} · ${esc(state.user.experience)}</p></div></div><button class="btn light" onclick="editProfile()">Edit profile</button></section>
   <div class="profile-layout"><div class="profile-main"><section class="content-card"><div class="section-head compact"><h2>About</h2><button class="text-link" onclick="editProfile()">Edit</button></div><p>${esc(state.user.bio)}</p><div class="profile-details"><span>📍 ${esc(state.user.district)}, ${esc(state.user.province)}</span><span>🥾 ${esc(state.user.experience)}</span><span>📅 ${esc(state.user.availability)}</span><span>💰 ${esc(state.user.budget)} budget</span><span>🗣 ${state.user.languages.map(esc).join(", ")}</span></div></section>
   ${incoming.length?`<section class="content-card"><h2>Friend requests <span class="count">${incoming.length}</span></h2><div class="request-list">${incoming.map(u=>`<div class="request">${avatar(u,"sm")}<div><b>${esc(u.name)}</b><small>${esc(u.bio)}</small></div><button class="btn primary" onclick="acceptRequest(${u.id})">Accept</button><button class="btn ghost" onclick="removeIncoming(${u.id})">Decline</button></div>`).join("")}</div></section>`:""}
   <section class="content-card"><div class="section-head compact"><div><h2>Saved hikes</h2><p>Your shortlist.</p></div></div><div class="mini-grid">${saved.map(trailCard).join("")||`<div class="empty full-span"><span>♡</span><h3>No saved trails yet</h3><p>Explore Nepal and save a few routes.</p></div>`}</div></section>
@@ -235,12 +301,12 @@ function renderPreferences(){
 function savePreferences(e){e.preventDefault();const selected=[...document.querySelectorAll(".interest.selected")].map(x=>x.querySelector("b").textContent.toLowerCase());const f=new FormData(e.target);state.user.interests=selected;state.user.experience=f.get("experience");state.user.availability=f.get("availability");state.user.budget=f.get("budget");state.user.languages=String(f.get("languages")).split(",").map(x=>x.trim()).filter(Boolean);persist();toast("Preferences saved!");location.hash="#home";}
 
 function renderLogin(){
-  app.innerHTML=`<section class="auth-page"><div class="auth-art"><span class="pill">🇳🇵 Hike Sathi</span><h1>Your next adventure starts with the right people.</h1><p>Discover Nepal's trails and connect with trekkers who match your style.</p><div class="auth-testimonial">“The easiest way to turn a solo trail idea into a group plan.”<small>— Hike Sathi community</small></div></div><div class="auth-card"><div class="auth-logo">⛰</div><span class="eyebrow">WELCOME BACK</span><h2>Log in to Hike Sathi</h2><p class="muted">Use the demo account or create your own local profile.</p><form onsubmit="login(event)"><label>Email<input name="email" type="email" value="aarya@example.com" required></label><label>Password<input name="password" type="password" value="password" required></label><div class="form-row"><label class="checkbox"><input type="checkbox"> Remember me</label><a href="#" onclick="toast('Password reset would connect to your backend email service.','info');return false">Forgot password?</a></div><button class="btn primary full">Log in</button></form><div class="auth-divider">or</div><button class="btn secondary full" onclick="demoLogin()">Continue with demo account</button><p class="auth-bottom">Don't have an account? <a href="#signup">Create one</a></p></div></section>`;
+  app.innerHTML=`<section class="auth-page"><div class="auth-art"><span class="pill">🇳🇵 Trek Sathi</span><h1>Your next adventure starts with the right people.</h1><p>Discover Nepal's trails and connect with trekkers who match your style.</p><div class="auth-testimonial">“The easiest way to turn a solo trail idea into a group plan.”<small>— Trek Sathi community</small></div></div><div class="auth-card"><div class="auth-logo">⛰</div><span class="eyebrow">WELCOME BACK</span><h2>Log in to Trek Sathi</h2><p class="muted">Use the demo account or create your own local profile.</p><form onsubmit="login(event)"><label>Email<input name="email" type="email" value="aarya@example.com" required></label><label>Password<input name="password" type="password" value="password" required></label><div class="form-row"><label class="checkbox"><input type="checkbox"> Remember me</label><a href="#" onclick="toast('Password reset would connect to your backend email service.','info');return false">Forgot password?</a></div><button class="btn primary full">Log in</button></form><div class="auth-divider">or</div><button class="btn secondary full" onclick="demoLogin()">Continue with demo account</button><p class="auth-bottom">Don't have an account? <a href="#signup">Create one</a></p></div></section>`;
 }
-function login(e){e.preventDefault();state.loggedIn=true;persist();toast("Welcome back to Hike Sathi!");location.hash="#home";}
+function login(e){e.preventDefault();state.loggedIn=true;persist();toast("Welcome back to Trek Sathi!");location.hash="#home";}
 function demoLogin(){state.loggedIn=true;persist();toast("Demo account loaded!");location.hash="#home";}
 function renderSignup(){
-  app.innerHTML=`<section class="auth-page"><div class="auth-art signup-art"><span class="pill">CREATE YOUR SATHI PROFILE</span><h1>Tell us how you like to hike.</h1><p>Your profile helps Hike Sathi find better trails, groups and companions.</p><div class="signup-benefits"><span>✓ Trail recommendations</span><span>✓ Companion matching</span><span>✓ Groups & messaging</span></div></div><div class="auth-card"><div class="auth-logo">⛰</div><span class="eyebrow">JOIN THE COMMUNITY</span><h2>Create your account</h2><form onsubmit="signup(event)" class="form-grid"><label>Name<input name="name" required placeholder="Full name"></label><label>Email<input name="email" type="email" required placeholder="you@email.com"></label><label>Password<input name="password" type="password" required placeholder="••••••••"></label><label>Province<select name="province">${PROVINCES.slice(1).map(x=>`<option>${x}</option>`).join("")}</select></label><label>Experience<select name="experience"><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></label><label>District<input name="district" placeholder="e.g. Lalitpur"></label><button class="btn primary span-2">Create Hike Sathi account</button></form><p class="auth-bottom">Already have an account? <a href="#login">Log in</a></p></div></section>`;
+  app.innerHTML=`<section class="auth-page"><div class="auth-art signup-art"><span class="pill">CREATE YOUR SATHI PROFILE</span><h1>Tell us how you like to hike.</h1><p>Your profile helps Trek Sathi find better trails, groups and companions.</p><div class="signup-benefits"><span>✓ Trail recommendations</span><span>✓ Companion matching</span><span>✓ Groups & messaging</span></div></div><div class="auth-card"><div class="auth-logo">⛰</div><span class="eyebrow">JOIN THE COMMUNITY</span><h2>Create your account</h2><form onsubmit="signup(event)" class="form-grid"><label>Name<input name="name" required placeholder="Full name"></label><label>Email<input name="email" type="email" required placeholder="you@email.com"></label><label>Password<input name="password" type="password" required placeholder="••••••••"></label><label>Province<select name="province">${PROVINCES.slice(1).map(x=>`<option>${x}</option>`).join("")}</select></label><label>Experience<select name="experience"><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Expert</option></select></label><label>District<input name="district" placeholder="e.g. Lalitpur"></label><button class="btn primary span-2">Create Trek Sathi account</button></form><p class="auth-bottom">Already have an account? <a href="#login">Log in</a></p></div></section>`;
 }
 function signup(e){e.preventDefault();const f=new FormData(e.target);state.user={...DEFAULT_USER,name:f.get("name"),email:f.get("email"),initials:initials(f.get("name")),province:f.get("province"),district:f.get("district")||"Not specified",experience:f.get("experience"),saved:[],completed:[],friends:[],incoming:[],sent:[]};state.loggedIn=true;persist();toast("Account created!");location.hash="#preferences";}
 
