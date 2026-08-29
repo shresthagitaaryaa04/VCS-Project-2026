@@ -1,4 +1,4 @@
-# Hike Sathi
+# Trek Sathi
 
 A completely new, lightweight front-end recreation of the core trekking-companion system from the supplied project, built primarily with **HTML, CSS and vanilla JavaScript**.
 
@@ -49,7 +49,7 @@ This is a static site. Upload the whole folder to:
 
 ## Important architecture note
 
-The supplied original project uses React + Node/Express + MongoDB + Socket.IO + a Python recommendation service. This Hike Sathi version intentionally keeps the **main website in HTML/CSS/JavaScript** and uses localStorage for the demo data.
+The supplied original project uses React + Node/Express + MongoDB + Socket.IO + a Python recommendation service. This Trek Sathi version intentionally keeps the **main website in HTML/CSS/JavaScript** and uses localStorage for the demo data.
 
 That means login, groups, friends and messages are functional in the browser, but they are not multi-user/server-backed yet. For a production system, replace the localStorage functions in `app.js` with API calls and add a real authentication/database/chat backend.
 
