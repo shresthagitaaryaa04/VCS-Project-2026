@@ -87,13 +87,30 @@ function render(){
 function renderHome(){
   const rec=TRAILS.filter(t=>t.tags.some(x=>state.user.interests.includes(x))).slice(0,4);
   const people=USERS.filter(u=>u.interests.some(x=>state.user.interests.includes(x))).sort((a,b)=>b.match-a.match).slice(0,4);
-  app.innerHTML=`<section class="hero">
-    <div class="hero-copy"><span class="pill">🇳🇵 Made for Nepal's trails</span><h1>Find your path.<br><em>Find your sathi.</em></h1><p>Discover trekking routes, meet compatible hikers, create groups and plan your next Himalayan adventure — all in one place.</p>
-    <div class="hero-search"><span>⌕</span><input id="home-search" placeholder="Search trails, districts, mountains..." onkeydown="if(event.key==='Enter')goExplore(this.value)"><button onclick="goExplore(document.getElementById('home-search').value)">Explore</button></div>
-    <div class="hero-stats"><span><strong>120+</strong> trails</span><span><strong>2.4k</strong> trekkers</span><span><strong>38</strong> active groups</span></div></div>
+  app.innerHTML=`
+  <section class="hero">
+    <div class="hero-inner animate-up">
+      <div class="hero-content">
+        <span class="pill">NEPAL TREKKING COMMUNITY</span>
+        <h1 class="hero-title">Find your <span class="accent">trail people.</span></h1>
+        <p class="hero-desc">Discover Nepal's best hikes, find companions who match your pace and dates, and plan safer group adventures.</p>
+        <div class="hero-ctas">
+          <a href="#explore" class="btn primary btn-lg">Explore trails →</a>
+          <a href="#signup" class="btn light btn-lg">Create your private profile</a>
+        </div>
+      </div>
+      <div class="hero-feature-card animate-fade">
+        <div class="feature-item"><span class="feature-icon">🔒</span><div><b>Private by design</b><small>Public profiles use aliases, not email addresses.</small></div></div>
+        <div class="feature-item"><span class="feature-icon">📊</span><div><b>Explainable matching</b><small>See exactly why someone is recommended.</small></div></div>
+        <div class="feature-item"><span class="feature-icon">☁️</span><div><b>Live weather</b><small>7-day forecasts for each destination.</small></div></div>
+      </div>
+    </div>
   </section>
-  <section class="section"><div class="section-head"><div><span class="eyebrow">PERSONALIZED</span><h2>Recommended for you</h2><p>Trails matched to your interests and experience.</p></div><a href="#explore" class="text-link">View all →</a></div><div class="card-grid">${rec.map(trailCard).join("")}</div></section>
+
+  <section class="section"><div class="section-head"><div><span class="eyebrow">PERSONALIZED</span><h2>Recommended for you</h2><p>Trails matched to your interests and experience.</p></div><a href="#explore" class="text-link">View all →</a></div><div class="card-grid recommended-grid">${rec.map(trailCard).join("")}</div></section>
+
   <section class="section tinted"><div class="section-head"><div><span class="eyebrow">SOCIAL</span><h2>Find trekking partners</h2><p>Connect with people who share your pace, language and interests.</p></div><a href="#groups" class="text-link">See more →</a></div><div class="people-grid">${people.map(userCard).join("")}</div></section>
+
   <section class="section"><div class="feature-banner"><div><span class="eyebrow">PLAN TOGETHER</span><h2>Not sure where to start?</h2><p>Set your hiking preferences and Trek Sathi will rank trails and companions around your style.</p><a href="#preferences" class="btn light">Tune my preferences</a></div><div class="feature-icons"><span>🥾</span><span>🗺️</span><span>🤝</span></div></div></section>`;
 }
 
@@ -136,9 +153,9 @@ function renderTrail(){
     <section class="content-card"><div class="section-head compact"><div><h2>About this trail</h2><p>${esc(t.desc)}</p></div><button class="btn ${state.user.saved.includes(t.id)?"secondary":"primary"}" onclick="toggleSave(${t.id})">${state.user.saved.includes(t.id)?"♥ Saved":"♡ Save trail"}</button></div><div class="tag-row">${t.tags.map(x=>`<span class="tag">${esc(x)}</span>`).join("")}</div></section>
     <section class="content-card"><div class="section-head compact"><div><h2>Route map</h2><p>${esc(t.start)} → ${esc(t.end)} · approximate route overview</p></div></div><div id="trail-map"></div></section>
     <section class="content-card"><h2>Elevation & itinerary</h2><div class="elevation"><span style="height:28%"></span><span style="height:45%"></span><span style="height:38%"></span><span style="height:64%"></span><span style="height:76%"></span><span style="height:92%"></span><span style="height:71%"></span><span style="height:98%"></span><span style="height:80%"></span><span style="height:58%"></span></div><div class="day-list"><div><b>Day 1</b> ${esc(t.start)} → Forest village</div><div><b>Middle days</b> Gradual ascent, viewpoints and local teahouses</div><div><b>Final day</b> ${esc(t.end)} → return transfer</div></div></section>
-    <section class="content-card"><h2>Weather & preparation</h2><div class="weather-grid"><div><i class="fa-solid fa-cloud-sun" aria-hidden="true"></i><b>Morning</b><small>Clear · 8°C</small></div><div><i class="fa-solid fa-sun" aria-hidden="true"></i><b>Day</b><small>Partly cloudy · 16°C</small></div><div><i class="fa-solid fa-moon" aria-hidden="true"></i><b>Night</b><small>Cold · 4°C</small></div></div><p class="muted">Weather changes quickly in the mountains. Check local conditions before departure and carry appropriate layers, water and navigation essentials.</p></section>
+    <section class="content-card"><h2>Weather & preparation</h2><div id="weather-grid" class="weather-grid"><div class="muted">Loading weather…</div></div><p class="muted">Weather changes quickly in the mountains. Check local conditions before departure and carry appropriate layers, water and navigation essentials.</p></section>
   </div><aside class="detail-side"><div class="content-card sticky"><h3>Quick facts</h3><dl><dt>Start</dt><dd>${esc(t.start)}</dd><dt>End</dt><dd>${esc(t.end)}</dd><dt>Trail type</dt><dd>${esc(t.type)}</dd><dt>Experience</dt><dd>${esc(t.difficulty)}</dd><dt>Accommodation</dt><dd>Teahouse / lodge</dd></dl><button class="btn primary full" onclick="createGroupForTrail(${t.id})">Create a group</button><button class="btn secondary full" onclick="goExplore('${esc(t.name)}')">Find companions</button></div></aside></div></section>`;
-  setTimeout(()=>initMap(t),50);
+  setTimeout(()=>{ initMap(t); fetchWeather(t.lat,t.lng).then(days=>renderWeatherGrid('weather-grid',days)); },50);
 }
 function routeId(){ return location.hash.split("/")[1]?.split("?")[0] || "1"; }
 function initMap(t){
@@ -149,6 +166,55 @@ function initMap(t){
   L.marker([t.lat,t.lng]).addTo(state.map).bindPopup(`<b>${esc(t.name)}</b><br>${esc(t.start)} → ${esc(t.end)}`).openPopup();
   const line=[[t.lat-.06,t.lng-.08],[t.lat-.025,t.lng-.02],[t.lat+.02,t.lng+.04],[t.lat+.05,t.lng+.08]];
   L.polyline(line,{color:"#0b7a5c",weight:4}).addTo(state.map);
+}
+
+// Simple weather cache to avoid repeated API calls
+state.weatherCache = state.weatherCache || {};
+
+function weatherCodeToEmoji(code){
+  // Open-Meteo/WMO codes simplified
+  if(code === 0) return '☀️';
+  if(code === 1 || code === 2) return '🌤️';
+  if(code === 3) return '☁️';
+  if(code >= 45 && code <= 48) return '🌫️';
+  if(code >= 51 && code <= 67) return '🌧️';
+  if((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return '🌨️';
+  if(code >= 80 && code <= 82) return '🌦️';
+  if(code >= 95) return '⛈️';
+  return '🌈';
+}
+
+async function fetchWeather(lat,lng){
+  const key = `${lat.toFixed(3)},${lng.toFixed(3)}`;
+  if(state.weatherCache[key]) return state.weatherCache[key];
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Weather API error');
+    const data = await res.json();
+    // take first 7 days
+    const days = (data.daily && data.daily.time || []).map((d,i)=>({
+      date: d,
+      max: data.daily.temperature_2m_max[i],
+      min: data.daily.temperature_2m_min[i],
+      precip: data.daily.precipitation_sum ? data.daily.precipitation_sum[i] : 0,
+      code: data.daily.weathercode ? data.daily.weathercode[i] : null
+    })).slice(0,7);
+    state.weatherCache[key] = days;
+    return days;
+  }catch(e){ console.warn('weather fetch failed',e); return null; }
+}
+
+function renderWeatherGrid(targetId, days){
+  const el = document.getElementById(targetId);
+  if(!el) return;
+  if(!days){ el.innerHTML = `<div class="empty"><p class="muted">Weather unavailable</p></div>`; return; }
+  el.innerHTML = days.map(d=>{
+    const dt = new Date(d.date);
+    const opts = { weekday: 'short' };
+    const dayName = dt.toLocaleDateString(undefined,opts);
+    return `<div class="weather-day"><small>${dayName}</small><div class="weather-emoji">${weatherCodeToEmoji(d.code)}</div><div class="weather-temps"><b>${Math.round(d.max)}°C</b><small>${Math.round(d.min)}°C</small></div><small class="muted">${d.precip?d.precip+' mm':''}</small></div>`;
+  }).join('');
 }
 
 function renderGroups(){
