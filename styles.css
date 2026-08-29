@@ -337,7 +337,9 @@ a {
 }
 .save-btn {
   border: 0;
+
   background: #fffdfd;
+
   border-radius: 50%;
   width: 34px;
   height: 34px;
