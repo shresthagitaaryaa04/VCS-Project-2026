@@ -18,7 +18,8 @@ const state = {
     {id:2,title:"Friend request accepted",text:"Your friend request was accepted.",time:"Today",unread:true,type:"friend"},
     {id:3,title:"Group activity",text:"A member joined one of your trekking groups.",time:"Yesterday",unread:true,type:"group"},
     {id:4,title:"New group suggestion",text:"A group matching your trekking preferences is available.",time:"Yesterday",unread:false,type:"group"}
-  ]
+  ],
+  reviews: JSON.parse(localStorage.getItem("trekSathiReviews") || "null") || {}
 };
 
 const app = document.getElementById("app");
@@ -30,6 +31,7 @@ function persist(){
   localStorage.setItem("trekSathiUser", JSON.stringify(state.user));
   localStorage.setItem("trekSathiLoggedIn", JSON.stringify(state.loggedIn));
   localStorage.setItem("trekSathiNotifications", JSON.stringify(state.notifications));
+  localStorage.setItem("trekSathiReviews", JSON.stringify(state.reviews));
 }
 function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c])); }
 function toast(msg,type="success"){
@@ -231,8 +233,60 @@ function filterTrails(){
 function clearFilters(){ renderExplore(); }
 
 function openTrail(id){ location.hash=`#trail/${id}`; }
+function getTrailReviews(trailId){
+  if(!state.reviews[trailId]){
+    const defaults = [
+      {id:1,name:"Sujal R.",rating:5,message:"Beautiful sunrise views and a very manageable pace for the distance. The teahouses were warm and the route was well marked.",date:"2 weeks ago"},
+      {id:2,name:"Pratik K.",rating:4,message:"The trail was scenic and beginner-friendly with a few steep sections near the end. Carry a warm layer for early morning hikes.",date:"1 month ago"}
+    ];
+    state.reviews[trailId] = defaults;
+    persist();
+  }
+  return state.reviews[trailId];
+}
+
+function submitTrailReview(e, trailId){
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  const name = String(state.user.name || "Traveler");
+  const rating = Number(data.get("rating") || 5);
+  const message = String(data.get("message") || "").trim();
+
+  if(!message){
+    toast("Please write a short review before posting.", "info");
+    return;
+  }
+
+  const review = {
+    id: Date.now(),
+    name,
+    rating,
+    message,
+    date: "Just now"
+  };
+
+  const list = state.reviews[trailId] || [];
+  list.unshift(review);
+  state.reviews[trailId] = list;
+
+  const trail = TRAILS.find(t => t.id === trailId);
+  if(trail){
+    const total = list.length;
+    const avg = list.reduce((sum, item) => sum + Number(item.rating || 0), 0) / total;
+    trail.rating = Number(avg.toFixed(1));
+    trail.reviews = total;
+  }
+
+  persist();
+  form.reset();
+  renderTrail();
+  toast("Your review has been posted.");
+}
+
 function renderTrail(){
   const id=Number(routeId()), t=TRAILS.find(x=>x.id===id)||TRAILS[0]; state.activeTrail=t;
+  const reviews = getTrailReviews(t.id);
   app.innerHTML=`<section class="trail-detail"><button class="back-btn" onclick="history.back()">← Back to explore</button>
   <div class="trail-hero-detail"><img src="${t.image}" alt="${esc(t.name)}"><div class="trail-overlay"><span class="pill">${esc(t.province)} · ${esc(t.district)}</span><h1>${esc(t.name)}</h1><div>${badge(t.difficulty,t.difficulty.toLowerCase())} <span class="rating"> ${t.rating} · ${t.reviews} reviews</span></div></div></div>
   <div class="detail-grid"><div class="detail-main">
@@ -241,6 +295,17 @@ function renderTrail(){
     <section class="content-card"><div class="section-head compact"><div><h2>Route map</h2><p>${esc(t.start)} → ${esc(t.end)} · approximate route overview</p></div></div><div id="trail-map"></div></section>
     <section class="content-card"><h2>Elevation & itinerary</h2><div class="elevation"><span style="height:28%"></span><span style="height:45%"></span><span style="height:38%"></span><span style="height:64%"></span><span style="height:76%"></span><span style="height:92%"></span><span style="height:71%"></span><span style="height:98%"></span><span style="height:80%"></span><span style="height:58%"></span></div><div class="day-list"><div><b>Day 1</b> ${esc(t.start)} → Forest village</div><div><b>Middle days</b> Gradual ascent, viewpoints and local teahouses</div><div><b>Final day</b> ${esc(t.end)} → return transfer</div></div></section>
     <section class="content-card"><h2>Weather & preparation</h2><div id="weather-grid" class="weather-grid"><div class="muted">Loading weather…</div></div><p class="muted">Weather changes quickly in the mountains. Check local conditions before departure and carry appropriate layers, water and navigation essentials.</p></section>
+    <section class="content-card review-card"><div class="section-head compact"><div><h2>Reviews</h2><p>Share your experience and help future trekkers plan better.</p></div></div>
+      <div class="review-list">${reviews.map(r=>`<article class="review-item"><div class="review-top"><div class="review-user"><div class="avatar sm">${esc(initials(r.name))}</div><div><b>${esc(r.name)}</b><small>${esc(r.date)}</small></div></div><span class="review-score">★ ${Number(r.rating || 5).toFixed(1)}</span></div><p>${esc(r.message)}</p></article>`).join("")}</div>
+      <form class="review-form" onsubmit="submitTrailReview(event, ${t.id})">
+        <div class="review-form-row">
+          <label>Your rating<select name="rating"><option value="5">5 - Excellent</option><option value="4">4 - Good</option><option value="3">3 - Okay</option><option value="2">2 - Fair</option><option value="1">1 - Poor</option></select></label>
+          <label>Hiker name<input name="reviewer" value="${esc(state.user.name)}" readonly></label>
+        </div>
+        <textarea name="message" placeholder="Share your hike experience, tips, weather, route notes, and what made this trail memorable..." required></textarea>
+        <button class="btn primary">Post review</button>
+      </form>
+    </section>
   </div><aside class="detail-side"><div class="content-card sticky"><h3>Quick facts</h3><dl><dt>Start</dt><dd>${esc(t.start)}</dd><dt>End</dt><dd>${esc(t.end)}</dd><dt>Trail type</dt><dd>${esc(t.type)}</dd><dt>Experience</dt><dd>${esc(t.difficulty)}</dd><dt>Accommodation</dt><dd>Teahouse / lodge</dd></dl><button class="btn primary full" onclick="createGroupForTrail(${t.id})">Create a group</button><button class="btn secondary full" onclick="goExplore('${esc(t.name)}')">Find companions</button></div></aside></div></section>`;
   setTimeout(()=>{ initMap(t); fetchWeather(t.lat,t.lng).then(days=>renderWeatherGrid('weather-grid',days)); },50);
 }
