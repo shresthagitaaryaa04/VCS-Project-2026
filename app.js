@@ -188,11 +188,7 @@ function renderHome(){
           <a href="#signup" class="btn light btn-lg">Create your private profile</a>
         </div>
       </div>
-      <div class="hero-feature-card animate-fade">
-        <div class="feature-item"><span class="feature-icon"><i class="fa-solid fa-lock"></i></span><div><b>Private by design</b><small>Public profiles use aliases, not email addresses.</small></div></div>
-        <div class="feature-item"><span class="feature-icon"><i class="fa-solid fa-chart-simple"></i></span><div><b>Explainable matching</b><small>See exactly why someone is recommended.</small></div></div>
-        <div class="feature-item"><span class="feature-icon"><i class="fa-solid fa-cloud"></i></span><div><b>Live weather</b><small>7-day forecasts for each destination.</small></div></div>
-      </div>
+      
     </div>
   </section>
 
