@@ -1,0 +1,136 @@
+import { create } from "zustand";
+import axios from "axios";
+
+const API_URL = "/api/auth";
+
+axios.defaults.withCredentials = true;
+
+export const useAuthStore = create((set) => ({
+	user: null,
+	isAuthenticated: false,
+	error: null,
+	isLoading: false,
+	isCheckingAuth: true,
+	message: null,
+	isAuthModalOpen: false,
+	authModalMode: 'login', // 'login' or 'signup'
+	setAuthModal: (isOpen, mode = 'login') => set({ isAuthModalOpen: isOpen, authModalMode: mode }),
+	pendingRequests: 0,
+
+	setPendingRequests: (count) => set({ pendingRequests: count }),
+	incrementPendingRequests: () => set((state) => ({ pendingRequests: state.pendingRequests + 1 })),
+
+	signup: async (email, password, name, dob, phone, province, district, gender) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.post(`${API_URL}/signup`, { email, password, name, dob, phone, province, district, gender });
+			set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+		} catch (error) {
+			set({ error: error.response.data.message || "Error signing up", isLoading: false });
+			throw error;
+		}
+	},
+	login: async (email, password) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.post(`${API_URL}/login`, { email, password });
+			set({
+				isAuthenticated: true,
+				user: response.data.user,
+				error: null,
+				isLoading: false,
+			});
+		} catch (error) {
+			set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
+			throw error;
+		}
+	},
+
+	logout: async () => {
+		set({ isLoading: true, error: null });
+		try {
+			await axios.post(`${API_URL}/logout`);
+			set({ user: null, isAuthenticated: false, error: null, isLoading: false });
+		} catch (error) {
+			set({ error: "Error logging out", isLoading: false });
+			throw error;
+		}
+	},
+	verifyEmail: async (code) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.post(`${API_URL}/verify-email`, { code });
+			set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+			return response.data;
+		} catch (error) {
+			set({ error: error.response.data.message || "Error verifying email", isLoading: false });
+			throw error;
+		}
+	},
+	checkAuth: async () => {
+		set({ isCheckingAuth: true, error: null });
+		try {
+			const response = await axios.get(`${API_URL}/check-auth`);
+			set({ user: response.data.user, isAuthenticated: true, isCheckingAuth: false });
+		} catch (error) {
+			set({ error: null, isCheckingAuth: false, isAuthenticated: false });
+		}
+	},
+	forgotPassword: async (email) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.post(`${API_URL}/forgot-password`, { email });
+			set({ message: response.data.message, isLoading: false });
+		} catch (error) {
+			set({
+				isLoading: false,
+				error: error.response.data.message || "Error sending reset password email",
+			});
+			throw error;
+		}
+	},
+	resetPassword: async (token, password) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.post(`${API_URL}/reset-password/${token}`, { password });
+			set({ message: response.data.message, isLoading: false });
+		} catch (error) {
+			set({
+				isLoading: false,
+				error: error.response.data.message || "Error resetting password",
+			});
+			throw error;
+		}
+	},
+	savePreferences: async (preferences) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.post(`${API_URL}/preferences`, preferences);
+			set({ user: response.data.user, isLoading: false });
+		} catch (error) {
+			set({ error: error.response.data.message || "Error saving preferences", isLoading: false });
+			throw error;
+		}
+	},
+	updateProfile: async (data) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.put(`${API_URL}/profile`, data);
+			set({ user: response.data.user, isLoading: false });
+			return response.data;
+		} catch (error) {
+			set({ error: error.response.data.message || "Error updating profile", isLoading: false });
+			throw error;
+		}
+	},
+	getUserProfile: async (userId) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.get(`/api/users/${userId}`);
+			return response.data.user;
+		} catch (error) {
+			set({ error: error.response?.data?.message || "Error fetching user profile", isLoading: false });
+			throw error;
+		}
+	}
+}));
