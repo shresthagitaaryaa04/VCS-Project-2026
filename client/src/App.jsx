@@ -86,7 +86,7 @@ const RedirectAuthenticatedUser = ({ children }) => {
 
 const MainLayout = () => {
 	return (
-		<div className="min-h-screen bg-[#f8f7f2] flex flex-col">
+		<div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-200">
 			<NavBar />
 			<main className="grow">
 				<Outlet />

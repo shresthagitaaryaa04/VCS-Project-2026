@@ -7,6 +7,18 @@ import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
 import { useAuthStore } from "../store/authStore";
 import { nepalData } from "../data/nepalData";
 
+const getTodayDateValue = () => new Date().toISOString().slice(0, 10);
+const getAgeFromDob = (dobValue) => {
+	const birthDate = new Date(dobValue);
+	const today = new Date();
+	let age = today.getFullYear() - birthDate.getFullYear();
+	const monthDiff = today.getMonth() - birthDate.getMonth();
+	if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+		age -= 1;
+	}
+	return age;
+};
+
 const SignUpPage = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
@@ -23,8 +35,11 @@ const SignUpPage = () => {
 
 	const validateForm = () => {
 		const errors = {};
+		const today = getTodayDateValue();
 		if (!name.trim()) errors.name = "Full Name is required";
 		if (!dob) errors.dob = "Date of Birth is required";
+		else if (dob > today) errors.dob = "Date of Birth cannot be in the future";
+		else if (getAgeFromDob(dob) < 14) errors.dob = "You must be at least 14 years old to sign up";
 		if (!gender) errors.gender = "Gender is required";
 		if (!phone.trim()) errors.phone = "Phone number is required";
 		if (!province) errors.province = "Province is required";
@@ -88,10 +103,14 @@ const SignUpPage = () => {
 								placeholder='Date of Birth'
 								value={dob}
 								onChange={(e) => setDob(e.target.value)}
+								max={getTodayDateValue()}
 								label="Date of Birth"
 								required
 								error={formErrors.dob}
 							/>
+							<p className="-mt-3 text-xs text-[#5a6455] md:col-start-2">
+								You must be at least 14 years old to sign up.
+							</p>
 						</div>
 
 						{/* Gender and Phone Row */}
@@ -222,9 +241,7 @@ const SignUpPage = () => {
 							whileHover={{ scale: 1.02 }}
 							whileTap={{ scale: 0.98 }}
 							type='submit'
-							type='submit'
 							disabled={isLoading}
-							className='mt-2 w-full py-3 px-4 bg-[#1a472a] hover:bg-[#15391f] text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2'
 						>
 							{isLoading ? <Loader className='animate-spin' size={20} /> : "Create Trek Sathi account"}
 						</motion.button>

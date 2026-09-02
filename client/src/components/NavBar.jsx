@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, User, MessageCircle, Home, Compass, Users, LogOut, Bell } from 'lucide-react';
+import { Menu, X, User, MessageCircle, Home, Compass, Users, LogOut, Bell, Moon, SunMedium } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
@@ -11,12 +11,18 @@ import { useSocket } from '../context/SocketContext';
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('trekSathiTheme') || 'light');
   const location = useLocation();
   const { conversations } = useChatStore();
   const { isAuthenticated, logout, pendingRequests, setPendingRequests, incrementPendingRequests, setAuthModal } = useAuthStore();
   const { socket } = useSocket();
 
   const unreadCount = conversations.reduce((acc, curr) => acc + (curr.unreadCount || 0), 0);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('trekSathiTheme', theme);
+  }, [theme]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -43,11 +49,15 @@ const NavBar = () => {
 
   const isActive = (path) =>
     location.pathname === path
-      ? 'text-[#1a472a] border-b-2 border-[#40916c]'
-      : 'text-gray-600 hover:text-[#1a472a] transition-colors';
+      ? 'text-primary border-b-2 border-primary'
+      : 'text-muted-foreground hover:text-foreground transition-colors';
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-[#ddd8cc]/50 sticky top-0 z-50">
+    <nav className="bg-background/85 backdrop-blur-md border-b border-border sticky top-0 z-50 text-foreground transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
 
@@ -59,10 +69,10 @@ const NavBar = () => {
               className="h-9 w-auto object-contain"
             />
             <div className="flex flex-col justify-center">
-              <span className="font-extrabold text-xl text-[#111c14] tracking-tight leading-none mb-0.5">
+              <span className="font-extrabold text-xl text-foreground tracking-tight leading-none mb-0.5">
                 Trek Sathi
               </span>
-              <span className="text-[9px] sm:text-[10px] text-[#5a6455] font-medium tracking-wide uppercase">
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium tracking-wide uppercase">
                 Find your trail. Find your sathi.
               </span>
             </div>
@@ -90,11 +100,19 @@ const NavBar = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? <SunMedium className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
             {isAuthenticated ? (
               <>
                 <button
                   onClick={() => setIsNotificationsOpen(true)}
-                  className="relative p-2 rounded-lg text-gray-600 hover:bg-[#f0ece3] hover:text-[#1a472a] transition-colors"
+                  className="relative p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                   title="Notifications"
                 >
                   <Bell className="w-5 h-5" />
@@ -105,8 +123,8 @@ const NavBar = () => {
                 <Link to="/profile" className="relative ml-2">
                   <button
                     className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${location.pathname === '/profile'
-                      ? 'bg-[#d8f3dc] text-[#1a472a]'
-                      : 'text-gray-600 hover:bg-[#f0ece3] hover:text-[#1a472a]'
+                      ? 'bg-primary/15 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                   >
                     <User className="w-4 h-4" />
@@ -116,7 +134,7 @@ const NavBar = () => {
                 <button
                   onClick={() => logout()}
                   title="Logout"
-                  className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 transition-colors"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -142,7 +160,7 @@ const NavBar = () => {
           {/* Mobile Hamburger */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-md text-gray-500 hover:text-[#1a472a] hover:bg-[#f0ece3] transition-colors"
+            className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -151,40 +169,47 @@ const NavBar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-[#ddd8cc] shadow-lg absolute w-full left-0 z-50">
+        <div className="md:hidden bg-background border-t border-border shadow-lg absolute w-full left-0 z-50 text-foreground">
           <div className="px-4 py-4 space-y-1">
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
+            >
+              {theme === 'dark' ? <SunMedium className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            </button>
             <Link to="/" onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-[#1a472a] hover:bg-[#f0ece3]">
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted">
               <Home className="w-4 h-4" /> Home
             </Link>
             <Link to="/explore" onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-[#1a472a] hover:bg-[#f0ece3]">
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted">
               <Compass className="w-4 h-4" /> Explore
             </Link>
 
             {isAuthenticated ? (
               <>
                 <Link to="/groups" onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-[#1a472a] hover:bg-[#f0ece3]">
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted">
                   <Users className="w-4 h-4" /> Groups & People
                 </Link>
                 <Link to="/messages" onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-[#1a472a] hover:bg-[#f0ece3] justify-between">
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted justify-between">
                   <div className="flex items-center gap-3"><MessageCircle className="w-4 h-4" /> Messages</div>
                   {unreadCount > 0 && (
                     <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{unreadCount}</span>
                   )}
                 </Link>
-                <div className="border-t border-[#ddd8cc] my-2 pt-2">
+                <div className="border-t border-border my-2 pt-2">
                   <button onClick={() => { setIsOpen(false); setIsNotificationsOpen(true); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-[#1a472a] hover:bg-[#f0ece3] justify-between">
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted justify-between">
                     <div className="flex items-center gap-3"><Bell className="w-4 h-4" /> Notifications</div>
                     {pendingRequests > 0 && (
                       <span className="bg-red-500 w-2.5 h-2.5 rounded-full"></span>
                     )}
                   </button>
                   <Link to="/profile" onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-700 hover:text-[#1a472a] hover:bg-[#f0ece3] justify-between">
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted justify-between">
                     <div className="flex items-center gap-3"><User className="w-4 h-4" /> My Profile</div>
                   </Link>
                   <button
@@ -195,13 +220,13 @@ const NavBar = () => {
                 </div>
               </>
             ) : (
-              <div className="border-t border-[#ddd8cc] my-2 pt-2 space-y-3">
+              <div className="border-t border-border my-2 pt-2 space-y-3">
                 <button onClick={() => { setIsOpen(false); setAuthModal(true, 'login'); }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#1a472a] hover:bg-[#f0ece3]">
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-muted">
                   Log in
                 </button>
                 <button onClick={() => { setIsOpen(false); setAuthModal(true, 'signup'); }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold text-white bg-[#1a472a] hover:bg-[#15391f]">
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover">
                   Sign up
                 </button>
               </div>
@@ -231,43 +256,43 @@ const NavBar = () => {
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="relative w-80 max-w-[85vw] bg-white/85 backdrop-blur-xl border-l border-[#ddd8cc]/50 h-full shadow-2xl flex flex-col"
+                className="relative w-80 max-w-[85vw] bg-background/90 backdrop-blur-xl border-l border-border h-full shadow-2xl flex flex-col text-foreground"
               >
-                <div className="p-5 border-b border-[#ddd8cc]/50 flex justify-between items-center">
-                  <h2 className="font-bold text-lg text-[#1a472a] flex items-center gap-2">
+                <div className="p-5 border-b border-border flex justify-between items-center">
+                  <h2 className="font-bold text-lg text-foreground flex items-center gap-2">
                     <Bell className="w-5 h-5" /> Notifications
                   </h2>
-                  <button onClick={() => setIsNotificationsOpen(false)} className="p-2 rounded-full text-gray-500 hover:text-[#1a472a] hover:bg-[#f0ece3]/50 transition-colors">
+                  <button onClick={() => setIsNotificationsOpen(false)} className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
                 
                 <div className="flex-1 overflow-y-auto p-5 space-y-4">
                   {pendingRequests > 0 ? (
-                    <div className="group bg-white rounded-xl p-4 border border-[#ddd8cc] shadow-sm hover:border-[#40916c]/50 transition-colors flex flex-col gap-3">
+                    <div className="group bg-card rounded-xl p-4 border border-border shadow-sm hover:border-primary/50 transition-colors flex flex-col gap-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-[#1a472a] flex items-center gap-1.5">
-                          <Users className="w-4 h-4 text-[#40916c]" /> Friend Requests
+                        <span className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                          <Users className="w-4 h-4 text-primary" /> Friend Requests
                         </span>
                         <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">{pendingRequests} new</span>
                       </div>
-                      <p className="text-sm text-gray-600 leading-relaxed">
+                      <p className="text-sm text-muted-foreground leading-relaxed">
                         You have {pendingRequests} pending friend request{pendingRequests > 1 ? 's' : ''}. Check your profile to respond.
                       </p>
                       <Link 
                         to="/profile" 
                         onClick={() => setIsNotificationsOpen(false)} 
-                        className="mt-2 text-sm font-semibold text-[#1a472a] border border-[#1a472a] py-2 px-4 rounded-lg text-center hover:bg-[#f0ece3] transition-colors"
+                        className="mt-2 text-sm font-semibold text-primary border border-primary py-2 px-4 rounded-lg text-center hover:bg-muted transition-colors"
                       >
                         View Requests
                       </Link>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                      <div className="w-16 h-16 bg-[#f0ece3] rounded-full flex items-center justify-center mb-4">
-                        <Bell className="w-8 h-8 text-[#a9b0a6]" />
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                        <Bell className="w-8 h-8 text-muted-foreground" />
                       </div>
-                      <p className="text-[15px] font-medium text-gray-500">You're all caught up!</p>
+                      <p className="text-[15px] font-medium text-foreground">You're all caught up!</p>
                       <p className="text-sm mt-1 text-center max-w-[200px]">No new notifications to show right now.</p>
                     </div>
                   )}

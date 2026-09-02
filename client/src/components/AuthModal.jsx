@@ -6,6 +6,19 @@ import { useAuthStore } from '../store/authStore';
 import Input from './Input';
 import LoadingSpinner from './LoadingSpinner';
 import { Link, useNavigate } from 'react-router-dom';
+import { nepalData } from '../data/nepalData';
+
+const getTodayDateValue = () => new Date().toISOString().slice(0, 10);
+const getAgeFromDob = (dobValue) => {
+  const birthDate = new Date(dobValue);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age -= 1;
+  }
+  return age;
+};
 
 const AuthModal = () => {
   const { isAuthModalOpen, authModalMode, setAuthModal, login, signup, isLoading, error } = useAuthStore();
@@ -30,12 +43,15 @@ const AuthModal = () => {
 
   const validateForm = () => {
     const newErrors = {};
+    const today = getTodayDateValue();
     if (!email) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Please enter a valid email';
     if (!password) newErrors.password = 'Password is required';
     if (authModalMode === 'signup') {
       if (!name) newErrors.name = 'Full name is required';
       if (!dob) newErrors.dob = 'Date of birth is required';
+      else if (dob > today) newErrors.dob = 'Date of birth cannot be in the future';
+      else if (getAgeFromDob(dob) < 14) newErrors.dob = 'You must be at least 14 years old to sign up';
       if (!phone) newErrors.phone = 'Phone number is required';
       if (!district) newErrors.district = 'District is required';
       if (!province) newErrors.province = 'Province is required';
@@ -133,8 +149,12 @@ const AuthModal = () => {
                       <Input
                         type="date" id="modal-dob" label="Date of Birth"
                         value={dob} onChange={e => { setDob(e.target.value); if (formErrors.dob) setFormErrors({ ...formErrors, dob: undefined }); }}
+                        max={getTodayDateValue()}
                         icon={<Calendar className="w-5 h-5" />} error={formErrors.dob}
                       />
+                      <p className="col-span-2 -mt-1 text-[11px] text-gray-500">
+                        You must be at least 14 years old to sign up.
+                      </p>
                       <Input
                         type="tel" id="modal-phone" label="Phone"
                         value={phone} onChange={e => { setPhone(e.target.value); if (formErrors.phone) setFormErrors({ ...formErrors, phone: undefined }); }}
@@ -144,18 +164,40 @@ const AuthModal = () => {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <label className="text-sm font-medium text-gray-700">Province</label>
-                        <select value={province} onChange={e => { setProvince(e.target.value); if (formErrors.province) setFormErrors({ ...formErrors, province: undefined }); }}
-                          className={`w-full border ${formErrors.province ? 'border-red-500' : 'border-[#ddd8cc]'} rounded-xl px-3 py-2.5 focus:border-[#40916c] focus:ring-1 focus:ring-[#40916c] outline-none text-sm transition-all bg-white`}>
+                        <select
+                          value={province}
+                          onChange={e => {
+                            setProvince(e.target.value);
+                            setDistrict('');
+                            if (formErrors.province) setFormErrors({ ...formErrors, province: undefined });
+                          }}
+                          className={`w-full border ${formErrors.province ? 'border-red-500' : 'border-[#ddd8cc]'} rounded-xl px-3 py-2.5 focus:border-[#40916c] focus:ring-1 focus:ring-[#40916c] outline-none text-sm transition-all bg-white`}
+                        >
                           <option value="">Select</option>
                           {['Koshi','Madhesh','Bagmati','Gandaki','Lumbini','Karnali','Sudurpashchim'].map(p => <option key={p}>{p}</option>)}
                         </select>
                         {formErrors.province && <p className="text-xs text-red-500 mt-1">{formErrors.province}</p>}
                       </div>
-                      <Input
-                        type="text" id="modal-district" label="District"
-                        value={district} onChange={e => { setDistrict(e.target.value); if (formErrors.district) setFormErrors({ ...formErrors, district: undefined }); }}
-                        placeholder="e.g. Kathmandu" icon={<MapPin className="w-5 h-5" />} error={formErrors.district}
-                      />
+                      <div className="space-y-1">
+                        <label className="text-sm font-medium text-gray-700">District</label>
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                            <MapPin className="w-5 h-5" />
+                          </div>
+                          <select
+                            value={district}
+                            onChange={e => { setDistrict(e.target.value); if (formErrors.district) setFormErrors({ ...formErrors, district: undefined }); }}
+                            className={`w-full border ${formErrors.district ? 'border-red-500' : 'border-[#ddd8cc]'} rounded-xl px-3 py-2.5 pl-10 focus:border-[#40916c] focus:ring-1 focus:ring-[#40916c] outline-none text-sm transition-all bg-white disabled:opacity-50 disabled:cursor-not-allowed`}
+                            disabled={!province}
+                          >
+                            <option value="">Select District</option>
+                            {province && nepalData[province]?.map((dist) => (
+                              <option key={dist} value={dist}>{dist}</option>
+                            ))}
+                          </select>
+                        </div>
+                        {formErrors.district && <p className="text-xs text-red-500 mt-1">{formErrors.district}</p>}
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Gender</label>

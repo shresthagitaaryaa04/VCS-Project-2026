@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Mountain, Map, Users, Footprints } from 'lucide-react';
-import ImageWithFallback from '../components/ImageWithFallBack';
 import TrailCard from '../components/TrailCard';
 import ProfileCard from '../components/ProfileCard';
 import Footer from '../components/Footer';
@@ -152,10 +151,10 @@ const HomePage = ({ userName = "Traveler" }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f7f2]">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground transition-colors duration-200">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-2 border-[#1a472a] border-t-transparent mb-4"></div>
-          <p className="text-sm text-[#5a6455] font-medium">Loading trails and trekkers...</p>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent mb-4"></div>
+          <p className="text-sm text-muted-foreground font-medium">Loading trails and trekkers...</p>
         </div>
       </div>
     );
@@ -163,11 +162,11 @@ const HomePage = ({ userName = "Traveler" }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f7f2]">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground transition-colors duration-200">
         <div className="text-center max-w-md">
           <p className="text-red-500 font-semibold mb-2">Error loading data</p>
-          <p className="text-sm text-[#5a6455]">{error}</p>
-          <p className="text-xs text-gray-400 mt-4">Make sure the backend server is running on port 5000</p>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-xs text-muted-foreground mt-4">Make sure the backend server is running on port 5000</p>
         </div>
       </div>
     );
@@ -176,24 +175,29 @@ const HomePage = ({ userName = "Traveler" }) => {
   return (
     <div>
       {/* ── Hero ── */}
-      <div className="p-4 sm:p-6 lg:p-8 bg-[#f8f7f2]">
-        <section className="relative min-h-[78vh] flex items-center overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] shadow-xl">
+      <div className="p-4 sm:p-6 lg:p-8 bg-background transition-colors duration-200">
+        <section className="relative min-h-[58vh] sm:min-h-[78vh] flex items-center overflow-hidden rounded-[1.5rem] sm:rounded-[3rem] shadow-xl">
           {/* Background image */}
           <div className="absolute inset-0">
-          <ImageWithFallback
-            src="https://res.cloudinary.com/dfrczxa2p/image/upload/v1771570882/trails/R0055/zzj7hkfs1dpi9aicscwi.jpg"
+          <img
+            src="/Desktop-hero.jpg"
             alt="Nepal Mountains"
-            className="w-full h-full object-cover"
+            className="hidden sm:block w-full h-full object-cover object-center"
+          />
+          <img
+            src="/Mobile-hero.jpg"
+            alt="Nepal Mountains"
+            className="block sm:hidden w-full h-full object-cover object-center"
           />
           {/* Dark overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f14]/70 via-[#0a1f14]/60 to-[#0a1f14]/85" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative w-full px-4 sm:px-8 lg:px-16 py-20 animate-up">
+        <div className="relative w-full px-4 sm:px-8 lg:px-16 py-14 sm:py-20 animate-up">
           <div className="max-w-2xl">
             {/* Eyebrow pill */}
-            <div className="pill-badge mb-6">
+            <div className="pill-badge mb-4 sm:mb-6 text-[0.62rem] sm:text-[0.72rem]">
               <Mountain className="w-3.5 h-3.5" /> Nepal Trekking Community
             </div>
 
@@ -210,19 +214,21 @@ const HomePage = ({ userName = "Traveler" }) => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-3 mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 mb-8 sm:mb-10">
               <button
                 onClick={() => navigate('/explore')}
-                className="px-6 py-3 bg-[#40916c] hover:bg-[#2d6a4f] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl text-sm"
+                className="px-6 py-3 bg-[#40916c] hover:bg-[#2d6a4f] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl text-sm w-full sm:w-auto"
               >
                 Explore trails
               </button>
-              <button
-                onClick={() => setAuthModal(true, 'signup')}
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/25 backdrop-blur-sm transition-all text-sm"
-              >
-                Create your profile
-              </button>
+              {!authUser && (
+                <button
+                  onClick={() => setAuthModal(true, 'signup')}
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/25 backdrop-blur-sm transition-all text-sm w-full sm:w-auto"
+                >
+                  Create your profile
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -230,17 +236,17 @@ const HomePage = ({ userName = "Traveler" }) => {
       </div>
 
       {/* ── Recommended Trails ── */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 space-y-14 bg-[#f8f7f2]">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 space-y-14 bg-background text-foreground transition-colors duration-200">
         <section>
           <div className="flex items-end justify-between mb-6">
             <div>
               <span className="eyebrow">Personalized</span>
-              <h2 className="text-2xl font-bold text-[#111c14] mt-1">Recommended for you</h2>
-              <p className="text-[#5a6455] text-sm mt-0.5">Trails matched to your interests and experience.</p>
+              <h2 className="text-2xl font-bold text-foreground mt-1">Recommended for you</h2>
+              <p className="text-muted-foreground text-sm mt-0.5">Trails matched to your interests and experience.</p>
             </div>
             <button
               onClick={() => navigate('/explore')}
-              className="text-sm font-semibold text-[#1a472a] hover:underline hidden sm:block"
+              className="text-sm font-semibold text-primary hover:underline hidden sm:block"
             >
               View all
             </button>
@@ -259,21 +265,21 @@ const HomePage = ({ userName = "Traveler" }) => {
           <div className="flex items-end justify-between mb-6">
             <div>
               <span className="eyebrow">Social</span>
-              <h2 className="text-2xl font-bold text-[#111c14] mt-1">Find trekking partners</h2>
-              <p className="text-[#5a6455] text-sm mt-0.5">Connect with people who share your pace and interests.</p>
+              <h2 className="text-2xl font-bold text-foreground mt-1">Find trekking partners</h2>
+              <p className="text-muted-foreground text-sm mt-0.5">Connect with people who share your pace and interests.</p>
             </div>
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => scroll(friendScrollRef, 'left')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronLeft className="w-4 h-4 text-[#111c14]" />
+                <ChevronLeft className="w-4 h-4 text-foreground" />
               </button>
               <button
                 onClick={() => scroll(friendScrollRef, 'right')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronRight className="w-4 h-4 text-[#111c14]" />
+                <ChevronRight className="w-4 h-4 text-foreground" />
               </button>
             </div>
           </div>
@@ -301,7 +307,7 @@ const HomePage = ({ userName = "Traveler" }) => {
           <div className="flex items-end justify-between mb-6">
             <div>
               <span className="eyebrow">Explore</span>
-              <h2 className="text-2xl font-bold text-[#111c14] mt-1">Popular trails</h2>
+              <h2 className="text-2xl font-bold text-foreground mt-1">Popular trails</h2>
               <p className="text-[#5a6455] text-sm mt-0.5">
                 {popularTrails.length} more destinations to discover.
               </p>
@@ -309,15 +315,15 @@ const HomePage = ({ userName = "Traveler" }) => {
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => scroll(popularScrollRef, 'left')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronLeft className="w-4 h-4 text-[#111c14]" />
+                <ChevronLeft className="w-4 h-4 text-foreground" />
               </button>
               <button
                 onClick={() => scroll(popularScrollRef, 'right')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronRight className="w-4 h-4 text-[#111c14]" />
+                <ChevronRight className="w-4 h-4 text-foreground" />
               </button>
             </div>
           </div>

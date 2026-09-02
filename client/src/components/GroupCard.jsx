@@ -39,10 +39,10 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
   };
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition">
+    <div className="bg-card text-foreground rounded-lg overflow-hidden shadow-md hover:shadow-xl transition border border-border">
       {/* Group Image */}
       {group.image && (
-        <div className="relative h-32 overflow-hidden bg-gray-200">
+        <div className="relative h-32 overflow-hidden bg-muted">
           <img
             src={group.image}
             alt={group.name}
@@ -54,7 +54,7 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
       {/* Difficulty Badge (always shown at top of card body) */}
       {group.difficulty && (
         <div className="px-5 pt-4 pb-0">
-          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${difficultyColors[group.difficulty] || 'text-gray-600 bg-gray-100'}`}>
+          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${difficultyColors[group.difficulty] || 'text-muted-foreground bg-muted'}`}>
             {group.difficulty}
           </span>
         </div>
@@ -65,24 +65,24 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
         {creatorName && (
           <div className="flex items-center gap-2 mb-3">
             <div className="text-sm">
-              <p className="text-gray-700 font-medium">Organized by {creatorName}</p>
+              <p className="text-muted-foreground font-medium">Organized by {creatorName}</p>
             </div>
           </div>
         )}
 
         {/* Group Name */}
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{group.name}</h3>
+        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">{group.name}</h3>
 
         {/* Trail */}
         <div className="flex items-center gap-2 mb-2">
           <MapPin size={16} className="text-blue-600 flex-shrink-0" />
-          <p className="text-sm text-gray-700 font-medium">{trailName}</p>
+          <p className="text-sm text-muted-foreground font-medium">{trailName}</p>
         </div>
 
         {/* Trek Date */}
         <div className="flex items-center gap-2 mb-2">
           <Calendar size={16} className="text-green-600 flex-shrink-0" />
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {group.trekDate ? new Date(group.trekDate).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'short',
@@ -95,31 +95,31 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
         {group.duration && (
           <div className="flex items-center gap-2 mb-3">
             <Clock size={16} className="text-purple-600 flex-shrink-0" />
-            <p className="text-sm text-gray-600">{group.duration}</p>
+            <p className="text-sm text-muted-foreground">{group.duration}</p>
           </div>
         )}
 
         {/* Description */}
         {group.description && (
-          <p className="text-sm text-gray-600 line-clamp-2 mb-4">{group.description}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{group.description}</p>
         )}
 
         {/* Members Info */}
-        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+        <div className="bg-muted/60 rounded-lg p-3 mb-4 border border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Users size={16} className="text-indigo-600" />
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-sm font-medium text-foreground">
                 {memberCount}/{maxMembers} Members
               </span>
             </div>
             {!isFull && spotsLeft > 0 && (
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+              <span className="text-xs bg-green-500/15 text-green-500 px-2 py-1 rounded-full font-medium">
                 {spotsLeft} spot{spotsLeft !== 1 ? 's' : ''} left
               </span>
             )}
             {isFull && (
-              <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">
+              <span className="text-xs bg-red-500/15 text-red-500 px-2 py-1 rounded-full font-medium">
                 Full
               </span>
             )}
@@ -130,7 +130,7 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
         <div className="flex flex-col gap-2">
           <button
             onClick={() => navigate(`/groups/${group._id}`)}
-            className="w-full flex items-center justify-center gap-2 font-medium py-2.5 rounded-lg transition bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm"
+            className="w-full flex items-center justify-center gap-2 font-medium py-2.5 rounded-lg transition bg-muted hover:bg-muted/80 text-foreground text-sm"
           >
             <Eye size={15} />
             View Details
@@ -152,9 +152,9 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
                 disabled={isFull}
                 className={`flex-1 flex items-center justify-center gap-2 font-medium py-2.5 rounded-lg transition ${
                   hasJoined
-                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    ? 'bg-green-500/15 text-green-500 hover:bg-green-500/20'
                     : isFull
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      ? 'bg-muted text-muted-foreground cursor-not-allowed'
                       : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
               >
@@ -171,7 +171,7 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
             {isMember && group.isCreator && onDelete && (
               <button
                 onClick={() => onDelete(group._id, group.name)}
-                className="p-2.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition flex-shrink-0"
+                className="p-2.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 transition flex-shrink-0"
                 title="Delete Group"
               >
                 <Trash2 size={16} />
