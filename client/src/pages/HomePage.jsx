@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Mountain, Map, Users, Footprints } from 'lucide-react';
-import ImageWithFallback from '../components/ImageWithFallBack';
 import TrailCard from '../components/TrailCard';
 import ProfileCard from '../components/ProfileCard';
 import Footer from '../components/Footer';
@@ -180,10 +179,15 @@ const HomePage = ({ userName = "Traveler" }) => {
         <section className="relative min-h-[58vh] sm:min-h-[78vh] flex items-center overflow-hidden rounded-[1.5rem] sm:rounded-[3rem] shadow-xl">
           {/* Background image */}
           <div className="absolute inset-0">
-          <ImageWithFallback
-            src="https://res.cloudinary.com/dfrczxa2p/image/upload/v1771570882/trails/R0055/zzj7hkfs1dpi9aicscwi.jpg"
+          <img
+            src="/Desktop-hero.jpg"
             alt="Nepal Mountains"
-            className="w-full h-full object-cover object-center sm:object-center"
+            className="hidden sm:block w-full h-full object-cover object-center"
+          />
+          <img
+            src="/Mobile-hero.jpg"
+            alt="Nepal Mountains"
+            className="block sm:hidden w-full h-full object-cover object-center"
           />
           {/* Dark overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f14]/70 via-[#0a1f14]/60 to-[#0a1f14]/85" />
