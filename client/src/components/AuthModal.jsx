@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/authStore';
 import Input from './Input';
 import LoadingSpinner from './LoadingSpinner';
 import { Link, useNavigate } from 'react-router-dom';
+import { nepalData } from '../data/nepalData';
 
 const getTodayDateValue = () => new Date().toISOString().slice(0, 10);
 const getAgeFromDob = (dobValue) => {
@@ -163,18 +164,40 @@ const AuthModal = () => {
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <label className="text-sm font-medium text-gray-700">Province</label>
-                        <select value={province} onChange={e => { setProvince(e.target.value); if (formErrors.province) setFormErrors({ ...formErrors, province: undefined }); }}
-                          className={`w-full border ${formErrors.province ? 'border-red-500' : 'border-[#ddd8cc]'} rounded-xl px-3 py-2.5 focus:border-[#40916c] focus:ring-1 focus:ring-[#40916c] outline-none text-sm transition-all bg-white`}>
+                        <select
+                          value={province}
+                          onChange={e => {
+                            setProvince(e.target.value);
+                            setDistrict('');
+                            if (formErrors.province) setFormErrors({ ...formErrors, province: undefined });
+                          }}
+                          className={`w-full border ${formErrors.province ? 'border-red-500' : 'border-[#ddd8cc]'} rounded-xl px-3 py-2.5 focus:border-[#40916c] focus:ring-1 focus:ring-[#40916c] outline-none text-sm transition-all bg-white`}
+                        >
                           <option value="">Select</option>
                           {['Koshi','Madhesh','Bagmati','Gandaki','Lumbini','Karnali','Sudurpashchim'].map(p => <option key={p}>{p}</option>)}
                         </select>
                         {formErrors.province && <p className="text-xs text-red-500 mt-1">{formErrors.province}</p>}
                       </div>
-                      <Input
-                        type="text" id="modal-district" label="District"
-                        value={district} onChange={e => { setDistrict(e.target.value); if (formErrors.district) setFormErrors({ ...formErrors, district: undefined }); }}
-                        placeholder="e.g. Kathmandu" icon={<MapPin className="w-5 h-5" />} error={formErrors.district}
-                      />
+                      <div className="space-y-1">
+                        <label className="text-sm font-medium text-gray-700">District</label>
+                        <div className="relative">
+                          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                            <MapPin className="w-5 h-5" />
+                          </div>
+                          <select
+                            value={district}
+                            onChange={e => { setDistrict(e.target.value); if (formErrors.district) setFormErrors({ ...formErrors, district: undefined }); }}
+                            className={`w-full border ${formErrors.district ? 'border-red-500' : 'border-[#ddd8cc]'} rounded-xl px-3 py-2.5 pl-10 focus:border-[#40916c] focus:ring-1 focus:ring-[#40916c] outline-none text-sm transition-all bg-white disabled:opacity-50 disabled:cursor-not-allowed`}
+                            disabled={!province}
+                          >
+                            <option value="">Select District</option>
+                            {province && nepalData[province]?.map((dist) => (
+                              <option key={dist} value={dist}>{dist}</option>
+                            ))}
+                          </select>
+                        </div>
+                        {formErrors.district && <p className="text-xs text-red-500 mt-1">{formErrors.district}</p>}
+                      </div>
                     </div>
                     <div className="space-y-1">
                       <label className="text-sm font-medium text-gray-700">Gender</label>
