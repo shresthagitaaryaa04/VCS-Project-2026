@@ -220,14 +220,14 @@ const ChatContainer = ({ initialConversationId }) => {
     }
 
     return (
-        <div className="flex h-full bg-background">
+        <div className="flex h-full flex-col md:flex-row bg-background">
             {/* Conversations sidebar */}
-            <div className="w-full md:w-96 border-r border-border flex flex-col">
+            <div className="w-full md:w-96 border-b md:border-b-0 md:border-r border-border flex flex-col max-h-[42vh] md:max-h-none">
                 {/* Header */}
-                <div className="p-4 border-b border-border">
+                <div className="p-3 sm:p-4 border-b border-border">
                     <div className="flex items-center justify-between mb-3">
-                        <h2 className="text-xl font-semibold">Messages</h2>
-                        <div className="flex gap-1 sm:gap-2">
+                        <h2 className="text-lg sm:text-xl font-semibold">Messages</h2>
+                        <div className="flex gap-1 sm:gap-2 flex-wrap justify-end">
                             <button
                                 onClick={() => setShowCreateGroup(true)}
                                 className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-muted rounded-lg transition-colors text-sm font-medium border border-transparent hover:border-border"
@@ -243,7 +243,7 @@ const ChatContainer = ({ initialConversationId }) => {
                                 title="Search Users"
                             >
                                 {showSearch ? <X className="w-4 h-4" /> : <Search className="w-4 h-4" />}
-                                <span>Search User</span>
+                                <span className="hidden sm:inline">Search User</span>
                             </button>
                         </div>
                     </div>
@@ -296,14 +296,14 @@ const ChatContainer = ({ initialConversationId }) => {
             </div>
 
             {/* Chat area */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-h-0">
                 {activeConversation ? (
                     <>
                         {/* Chat header */}
-                        <div className="p-4 border-b border-border">
+                        <div className="p-3 sm:p-4 border-b border-border">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activeConversation.isGroup ? 'bg-indigo-100 text-indigo-600' : 'bg-primary/20 text-primary'}`}>
+                                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                                    <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${activeConversation.isGroup ? 'bg-indigo-100 text-indigo-600' : 'bg-primary/20 text-primary'}`}>
                                         <span className="text-sm font-semibold">
                                             {activeConversation.isGroup
                                                 ? <User className="w-5 h-5" />
@@ -311,14 +311,14 @@ const ChatContainer = ({ initialConversationId }) => {
                                             }
                                         </span>
                                     </div>
-                                    <div>
-                                        <h3 className="font-semibold">
+                                    <div className="min-w-0">
+                                        <h3 className="font-semibold truncate max-w-[12rem] sm:max-w-none">
                                             {activeConversation.isGroup
                                                 ? activeConversation.groupName
                                                 : activeConversation.otherParticipant.name
                                             }
                                         </h3>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="text-xs text-muted-foreground truncate max-w-[12rem] sm:max-w-none">
                                             {activeConversation.isGroup
                                                 ? `${activeConversation.participants.length} members`
                                                 : (isConnected ? 'Connected' : 'Connecting...')
@@ -329,7 +329,7 @@ const ChatContainer = ({ initialConversationId }) => {
                                 {activeConversation.isGroup && (
                                     <button
                                         onClick={() => setShowAddMember(true)}
-                                        className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                                        className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground shrink-0"
                                         title="Add Members"
                                     >
                                         <UserPlus className="w-5 h-5" />
@@ -345,7 +345,7 @@ const ChatContainer = ({ initialConversationId }) => {
                         <MessageInput />
                     </>
                 ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                    <div className="flex items-center justify-center h-full min-h-[40vh] text-muted-foreground px-4 text-center">
                         <div className="text-center">
                             <p className="text-lg mb-2">Select a conversation</p>
                             <p className="text-sm">or search for users to start chatting</p>

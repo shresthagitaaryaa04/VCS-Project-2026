@@ -177,23 +177,23 @@ const HomePage = ({ userName = "Traveler" }) => {
     <div>
       {/* ── Hero ── */}
       <div className="p-4 sm:p-6 lg:p-8 bg-[#f8f7f2]">
-        <section className="relative min-h-[78vh] flex items-center overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] shadow-xl">
+        <section className="relative min-h-[58vh] sm:min-h-[78vh] flex items-center overflow-hidden rounded-[1.5rem] sm:rounded-[3rem] shadow-xl">
           {/* Background image */}
           <div className="absolute inset-0">
           <ImageWithFallback
             src="https://res.cloudinary.com/dfrczxa2p/image/upload/v1771570882/trails/R0055/zzj7hkfs1dpi9aicscwi.jpg"
             alt="Nepal Mountains"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center sm:object-center"
           />
           {/* Dark overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f14]/70 via-[#0a1f14]/60 to-[#0a1f14]/85" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative w-full px-4 sm:px-8 lg:px-16 py-20 animate-up">
+        <div className="relative w-full px-4 sm:px-8 lg:px-16 py-14 sm:py-20 animate-up">
           <div className="max-w-2xl">
             {/* Eyebrow pill */}
-            <div className="pill-badge mb-6">
+            <div className="pill-badge mb-4 sm:mb-6 text-[0.62rem] sm:text-[0.72rem]">
               <Mountain className="w-3.5 h-3.5" /> Nepal Trekking Community
             </div>
 
@@ -210,17 +210,17 @@ const HomePage = ({ userName = "Traveler" }) => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-3 mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 mb-8 sm:mb-10">
               <button
                 onClick={() => navigate('/explore')}
-                className="px-6 py-3 bg-[#40916c] hover:bg-[#2d6a4f] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl text-sm"
+                className="px-6 py-3 bg-[#40916c] hover:bg-[#2d6a4f] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl text-sm w-full sm:w-auto"
               >
                 Explore trails
               </button>
               {!authUser && (
                 <button
                   onClick={() => setAuthModal(true, 'signup')}
-                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/25 backdrop-blur-sm transition-all text-sm"
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/25 backdrop-blur-sm transition-all text-sm w-full sm:w-auto"
                 >
                   Create your profile
                 </button>
