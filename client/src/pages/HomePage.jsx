@@ -217,12 +217,14 @@ const HomePage = ({ userName = "Traveler" }) => {
               >
                 Explore trails
               </button>
-              <button
-                onClick={() => setAuthModal(true, 'signup')}
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/25 backdrop-blur-sm transition-all text-sm"
-              >
-                Create your profile
-              </button>
+              {!authUser && (
+                <button
+                  onClick={() => setAuthModal(true, 'signup')}
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/25 backdrop-blur-sm transition-all text-sm"
+                >
+                  Create your profile
+                </button>
+              )}
             </div>
           </div>
         </div>
