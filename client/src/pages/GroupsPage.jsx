@@ -430,17 +430,17 @@ export default function GroupsPage() {
   }, [groups, userGroups, searchQuery, selectedTrailFilter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pt-4">
+    <div className="min-h-screen bg-background text-foreground pt-4 transition-colors duration-200">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 pb-8">
         {/* Tabs and Actions */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-slate-200">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-border">
           <div className="flex gap-4 overflow-x-auto w-full sm:w-auto">
             <button
               onClick={() => setActiveTab('browse')}
               className={`px-4 py-3 font-semibold border-b-2 transition whitespace-nowrap ${activeTab === 'browse'
                   ? 'border-green-600 text-green-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
             >
               Browse Groups
@@ -449,7 +449,7 @@ export default function GroupsPage() {
               onClick={() => setActiveTab('my-groups')}
               className={`px-4 py-3 font-semibold border-b-2 transition whitespace-nowrap ${activeTab === 'my-groups'
                   ? 'border-green-600 text-green-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
             >
               My Groups {userGroups.length > 0 && `(${userGroups.length})`}
@@ -458,7 +458,7 @@ export default function GroupsPage() {
               onClick={() => setActiveTab('friends')}
               className={`px-4 py-3 font-semibold border-b-2 transition whitespace-nowrap ${activeTab === 'friends'
                   ? 'border-green-600 text-green-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
             >
               Suggested Friends
@@ -467,7 +467,7 @@ export default function GroupsPage() {
               onClick={() => setActiveTab('search-users')}
               className={`px-4 py-3 font-semibold border-b-2 transition whitespace-nowrap ${activeTab === 'search-users'
                   ? 'border-green-600 text-green-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
             >
               Search Users
@@ -500,20 +500,20 @@ export default function GroupsPage() {
               {/* Search Bar */}
               <form onSubmit={handleSearch}>
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search groups by name, trail, or description..."
-                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 hover:border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                    className="w-full pl-12 pr-4 py-3 border-2 border-border bg-card/90 text-foreground hover:border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
                   />
                 </div>
               </form>
 
               {/* Trail Filter Dropdown (Searchable) */}
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 text-gray-600 flex-shrink-0">
+                <div className="flex items-center gap-2 text-muted-foreground flex-shrink-0">
                   <Filter size={18} />
                   <span className="text-sm font-semibold">Filter by Trail:</span>
                 </div>
@@ -529,7 +529,7 @@ export default function GroupsPage() {
                       }}
                       onFocus={() => setShowTrailDropdown(true)}
                       placeholder="Type or select a trail..."
-                      className="w-full px-4 py-2.5 pr-20 border-2 border-gray-300 hover:border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition bg-white text-sm font-medium"
+                      className="w-full px-4 py-2.5 pr-20 border-2 border-border hover:border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition bg-card/90 text-foreground text-sm font-medium"
                     />
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                       {(selectedTrailFilter || trailFilterQuery) && (
@@ -539,28 +539,28 @@ export default function GroupsPage() {
                             setTrailFilterQuery('');
                             setShowTrailDropdown(false);
                           }}
-                          className="p-1 hover:bg-gray-100 rounded-full transition"
+                          className="p-1 hover:bg-muted rounded-full transition"
                         >
-                          <X size={14} className="text-gray-400" />
+                          <X size={14} className="text-muted-foreground" />
                         </button>
                       )}
                       <button
                         onClick={() => setShowTrailDropdown(!showTrailDropdown)}
-                        className="p-1 hover:bg-gray-100 rounded-full transition"
+                        className="p-1 hover:bg-muted rounded-full transition"
                       >
-                        <ChevronDown size={16} className={`text-gray-400 transition-transform ${showTrailDropdown ? 'rotate-180' : ''}`} />
+                        <ChevronDown size={16} className={`text-muted-foreground transition-transform ${showTrailDropdown ? 'rotate-180' : ''}`} />
                       </button>
                     </div>
                   </div>
                   {showTrailDropdown && (
-                    <div className="absolute z-50 top-full mt-1 w-full bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute z-50 top-full mt-1 w-full bg-card border-2 border-border rounded-xl shadow-lg max-h-60 overflow-y-auto">
                       <button
                         onClick={() => {
                           setSelectedTrailFilter('');
                           setTrailFilterQuery('');
                           setShowTrailDropdown(false);
                         }}
-                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-green-50 transition ${!selectedTrailFilter ? 'bg-green-50 text-green-700 font-semibold' : 'text-gray-700'
+                        className={`w-full text-left px-4 py-2.5 text-sm hover:bg-green-50 transition ${!selectedTrailFilter ? 'bg-green-50 text-green-700 font-semibold' : 'text-foreground'
                           }`}
                       >
                         All Trails
@@ -580,7 +580,7 @@ export default function GroupsPage() {
                                 setTrailFilterQuery('');
                                 setShowTrailDropdown(false);
                               }}
-                              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-green-50 transition ${selectedTrailFilter === trailName ? 'bg-green-50 text-green-700 font-semibold' : 'text-gray-700'
+                              className={`w-full text-left px-4 py-2.5 text-sm hover:bg-green-50 transition ${selectedTrailFilter === trailName ? 'bg-green-50 text-green-700 font-semibold' : 'text-foreground'
                                 }`}
                             >
                               {trailName}
@@ -597,7 +597,7 @@ export default function GroupsPage() {
             {loading && (
               <div className="flex items-center justify-center py-12">
                 <Loader className="animate-spin text-green-600 mr-3" size={24} />
-                <p className="text-gray-600">Loading groups...</p>
+                <p className="text-muted-foreground">Loading groups...</p>
               </div>
             )}
 
@@ -615,9 +615,9 @@ export default function GroupsPage() {
               </div>
             ) : !loading ? (
               <div className="text-center py-12">
-                <MapPin className="mx-auto text-gray-400 mb-4" size={48} />
-                <p className="text-gray-600 text-lg font-medium">No groups found</p>
-                <p className="text-gray-500">Try a different search or create a new group</p>
+                <MapPin className="mx-auto text-muted-foreground mb-4" size={48} />
+                <p className="text-foreground text-lg font-medium">No groups found</p>
+                <p className="text-muted-foreground">Try a different search or create a new group</p>
               </div>
             ) : null}
           </div>
@@ -629,7 +629,7 @@ export default function GroupsPage() {
             {loading && (
               <div className="flex items-center justify-center py-12">
                 <Loader className="animate-spin text-green-600 mr-3" size={24} />
-                <p className="text-gray-600">Loading your groups...</p>
+                <p className="text-muted-foreground">Loading your groups...</p>
               </div>
             )}
 
@@ -647,9 +647,9 @@ export default function GroupsPage() {
               </div>
             ) : !loading ? (
               <div className="text-center py-12">
-                <Users className="mx-auto text-gray-400 mb-4" size={48} />
-                <p className="text-gray-600 text-lg font-medium">You haven't joined any groups yet</p>
-                <p className="text-gray-500">Browse groups and join one to get started</p>
+                <Users className="mx-auto text-muted-foreground mb-4" size={48} />
+                <p className="text-foreground text-lg font-medium">You haven't joined any groups yet</p>
+                <p className="text-muted-foreground">Browse groups and join one to get started</p>
               </div>
             ) : null}
           </div>
@@ -661,7 +661,7 @@ export default function GroupsPage() {
             {loading && (
               <div className="flex items-center justify-center py-12">
                 <Loader className="animate-spin text-green-600 mr-3" size={24} />
-                <p className="text-gray-600">Loading suggested friends...</p>
+                <p className="text-muted-foreground">Loading suggested friends...</p>
               </div>
             )}
 
@@ -680,8 +680,8 @@ export default function GroupsPage() {
               </div>
             ) : !loading ? (
               <div className="text-center py-12">
-                <Users className="mx-auto text-gray-400 mb-4" size={48} />
-                <p className="text-gray-600 text-lg font-medium">No users available</p>
+                <Users className="mx-auto text-muted-foreground mb-4" size={48} />
+                <p className="text-foreground text-lg font-medium">No users available</p>
               </div>
             ) : null}
           </div>
@@ -692,13 +692,13 @@ export default function GroupsPage() {
           <div>
             <form onSubmit={handleSearchNewUsers} className="mb-8">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                 <input
                   type="text"
                   value={userSearchQuery}
                   onChange={(e) => setUserSearchQuery(e.target.value)}
                   placeholder="Search users by name or email..."
-                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 hover:border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-border bg-card/90 text-foreground hover:border-green-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
                 />
                 <button 
                   type="submit" 
@@ -713,7 +713,7 @@ export default function GroupsPage() {
             {searchingUsers && (
               <div className="flex items-center justify-center py-12">
                 <Loader className="animate-spin text-green-600 mr-3" size={24} />
-                <p className="text-gray-600">Searching users...</p>
+                <p className="text-muted-foreground">Searching users...</p>
               </div>
             )}
 
@@ -732,9 +732,9 @@ export default function GroupsPage() {
               </div>
             ) : !searchingUsers && userSearchQuery ? (
               <div className="text-center py-12">
-                <Users className="mx-auto text-gray-400 mb-4" size={48} />
-                <p className="text-gray-600 text-lg font-medium">No users found</p>
-                <p className="text-gray-500">Try a different search term</p>
+                <Users className="mx-auto text-muted-foreground mb-4" size={48} />
+                <p className="text-foreground text-lg font-medium">No users found</p>
+                <p className="text-muted-foreground">Try a different search term</p>
               </div>
             ) : null}
           </div>

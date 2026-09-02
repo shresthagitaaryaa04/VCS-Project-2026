@@ -151,10 +151,10 @@ const HomePage = ({ userName = "Traveler" }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f7f2]">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground transition-colors duration-200">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-2 border-[#1a472a] border-t-transparent mb-4"></div>
-          <p className="text-sm text-[#5a6455] font-medium">Loading trails and trekkers...</p>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent mb-4"></div>
+          <p className="text-sm text-muted-foreground font-medium">Loading trails and trekkers...</p>
         </div>
       </div>
     );
@@ -162,11 +162,11 @@ const HomePage = ({ userName = "Traveler" }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f7f2]">
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground transition-colors duration-200">
         <div className="text-center max-w-md">
           <p className="text-red-500 font-semibold mb-2">Error loading data</p>
-          <p className="text-sm text-[#5a6455]">{error}</p>
-          <p className="text-xs text-gray-400 mt-4">Make sure the backend server is running on port 5000</p>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <p className="text-xs text-muted-foreground mt-4">Make sure the backend server is running on port 5000</p>
         </div>
       </div>
     );
@@ -175,7 +175,7 @@ const HomePage = ({ userName = "Traveler" }) => {
   return (
     <div>
       {/* ── Hero ── */}
-      <div className="p-4 sm:p-6 lg:p-8 bg-[#f8f7f2]">
+      <div className="p-4 sm:p-6 lg:p-8 bg-background transition-colors duration-200">
         <section className="relative min-h-[58vh] sm:min-h-[78vh] flex items-center overflow-hidden rounded-[1.5rem] sm:rounded-[3rem] shadow-xl">
           {/* Background image */}
           <div className="absolute inset-0">
@@ -236,17 +236,17 @@ const HomePage = ({ userName = "Traveler" }) => {
       </div>
 
       {/* ── Recommended Trails ── */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 space-y-14 bg-[#f8f7f2]">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-12 space-y-14 bg-background text-foreground transition-colors duration-200">
         <section>
           <div className="flex items-end justify-between mb-6">
             <div>
               <span className="eyebrow">Personalized</span>
-              <h2 className="text-2xl font-bold text-[#111c14] mt-1">Recommended for you</h2>
-              <p className="text-[#5a6455] text-sm mt-0.5">Trails matched to your interests and experience.</p>
+              <h2 className="text-2xl font-bold text-foreground mt-1">Recommended for you</h2>
+              <p className="text-muted-foreground text-sm mt-0.5">Trails matched to your interests and experience.</p>
             </div>
             <button
               onClick={() => navigate('/explore')}
-              className="text-sm font-semibold text-[#1a472a] hover:underline hidden sm:block"
+              className="text-sm font-semibold text-primary hover:underline hidden sm:block"
             >
               View all
             </button>
@@ -265,21 +265,21 @@ const HomePage = ({ userName = "Traveler" }) => {
           <div className="flex items-end justify-between mb-6">
             <div>
               <span className="eyebrow">Social</span>
-              <h2 className="text-2xl font-bold text-[#111c14] mt-1">Find trekking partners</h2>
-              <p className="text-[#5a6455] text-sm mt-0.5">Connect with people who share your pace and interests.</p>
+              <h2 className="text-2xl font-bold text-foreground mt-1">Find trekking partners</h2>
+              <p className="text-muted-foreground text-sm mt-0.5">Connect with people who share your pace and interests.</p>
             </div>
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => scroll(friendScrollRef, 'left')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronLeft className="w-4 h-4 text-[#111c14]" />
+                <ChevronLeft className="w-4 h-4 text-foreground" />
               </button>
               <button
                 onClick={() => scroll(friendScrollRef, 'right')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronRight className="w-4 h-4 text-[#111c14]" />
+                <ChevronRight className="w-4 h-4 text-foreground" />
               </button>
             </div>
           </div>
@@ -307,7 +307,7 @@ const HomePage = ({ userName = "Traveler" }) => {
           <div className="flex items-end justify-between mb-6">
             <div>
               <span className="eyebrow">Explore</span>
-              <h2 className="text-2xl font-bold text-[#111c14] mt-1">Popular trails</h2>
+              <h2 className="text-2xl font-bold text-foreground mt-1">Popular trails</h2>
               <p className="text-[#5a6455] text-sm mt-0.5">
                 {popularTrails.length} more destinations to discover.
               </p>
@@ -315,15 +315,15 @@ const HomePage = ({ userName = "Traveler" }) => {
             <div className="hidden md:flex gap-2">
               <button
                 onClick={() => scroll(popularScrollRef, 'left')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronLeft className="w-4 h-4 text-[#111c14]" />
+                <ChevronLeft className="w-4 h-4 text-foreground" />
               </button>
               <button
                 onClick={() => scroll(popularScrollRef, 'right')}
-                className="p-2 rounded-full bg-white border border-[#ddd8cc] hover:bg-[#f0ece3] transition-all shadow-sm"
+                className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-all shadow-sm"
               >
-                <ChevronRight className="w-4 h-4 text-[#111c14]" />
+                <ChevronRight className="w-4 h-4 text-foreground" />
               </button>
             </div>
           </div>

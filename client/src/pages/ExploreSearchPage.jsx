@@ -417,30 +417,30 @@ const ExploreSearchPage = () => {
   }
 
   return (
-    <div className="min-h-screen pt-4 pb-12">
+    <div className="min-h-screen pt-4 pb-12 bg-background text-foreground transition-colors duration-200">
       <div className="w-full px-4 sm:px-6 lg:px-8">
 
         {/* Header & Search */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Explore Trails</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-6">Explore Trails</h1>
 
-          <div className="sticky top-20 z-10 bg-white/95 backdrop-blur-sm py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 mb-6 shadow-sm">
+          <div className="sticky top-20 z-10 bg-background/80 backdrop-blur-md py-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 mb-6 shadow-sm border-y border-border/60">
             <div className="max-w-3xl flex gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Where do you want to go?"
-                  className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full pl-12 pr-12 py-3 bg-card/90 text-foreground border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/40"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-lg transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-lg transition-colors"
                   >
-                    <X className="w-5 h-5 text-gray-500" />
+                    <X className="w-5 h-5 text-muted-foreground" />
                   </button>
                 )}
               </div>
@@ -448,8 +448,8 @@ const ExploreSearchPage = () => {
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`flex items-center gap-2 px-6 py-3 border rounded-xl font-medium transition-all ${showFilters || hasActiveFilters
-                  ? 'border-primary bg-primary/5 text-primary'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-primary/50'
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border bg-card/90 text-foreground hover:border-primary/50'
                   }`}
               >
                 <SlidersHorizontal className="w-5 h-5" />
@@ -461,9 +461,9 @@ const ExploreSearchPage = () => {
 
         {/* Filters Panel */}
         {showFilters && (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8 animate-in fade-in slide-in-from-top-4">
+          <div className="bg-card/90 backdrop-blur-sm rounded-xl shadow-lg border border-border p-6 mb-8 animate-in fade-in slide-in-from-top-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold text-lg text-gray-900">Filter Trails</h3>
+              <h3 className="font-semibold text-lg text-foreground">Filter Trails</h3>
               {hasActiveFilters && (
                 <button onClick={clearFilters} className="text-sm text-primary hover:text-primary/80 font-medium">
                   Clear all
@@ -474,13 +474,13 @@ const ExploreSearchPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Provinces */}
               <div className="space-y-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                   <MapPin className="w-4 h-4" /> Province
                 </label>
                 <select
                   value={selectedProvince}
                   onChange={(e) => setSelectedProvince(e.target.value)}
-                  className="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary"
+                  className="w-full p-2.5 bg-background/80 text-foreground border border-border rounded-lg text-sm focus:outline-none focus:border-primary"
                 >
                   {provinces.map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
@@ -488,7 +488,7 @@ const ExploreSearchPage = () => {
 
               {/* Difficulty */}
               <div className="space-y-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                   <Mountain className="w-4 h-4" /> Difficulty
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -496,7 +496,7 @@ const ExploreSearchPage = () => {
                     <button
                       key={opt}
                       onClick={() => setSelectedDifficulty(opt)}
-                      className={`px-3 py-1.5 text-sm rounded-lg border transition-all ${selectedDifficulty === opt ? 'bg-primary text-white border-primary' : 'bg-white border-gray-200 hover:border-primary/50'
+                      className={`px-3 py-1.5 text-sm rounded-lg border transition-all ${selectedDifficulty === opt ? 'bg-primary text-primary-foreground border-primary' : 'bg-background/80 text-foreground border-border hover:border-primary/50'
                         }`}
                     >
                       {opt}
@@ -507,13 +507,13 @@ const ExploreSearchPage = () => {
 
               {/* Days */}
               <div className="space-y-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                   <Calendar className="w-4 h-4" /> Days
                 </label>
                 <select
                   value={selectedDays}
                   onChange={(e) => setSelectedDays(e.target.value)}
-                  className="w-full p-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary"
+                  className="w-full p-2.5 bg-background/80 text-foreground border border-border rounded-lg text-sm focus:outline-none focus:border-primary"
                 >
                   {daysOptions.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -521,7 +521,7 @@ const ExploreSearchPage = () => {
 
               {/* Budget */}
               <div className="space-y-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                   <Wallet className="w-4 h-4" /> Budget
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -529,7 +529,7 @@ const ExploreSearchPage = () => {
                     <button
                       key={b}
                       onClick={() => setSelectedBudget(b)}
-                      className={`px-3 py-1.5 text-sm rounded-lg border transition-all ${selectedBudget === b ? 'bg-primary text-white border-primary' : 'bg-white border-gray-200 hover:border-primary/50'
+                      className={`px-3 py-1.5 text-sm rounded-lg border transition-all ${selectedBudget === b ? 'bg-primary text-primary-foreground border-primary' : 'bg-background/80 text-foreground border-border hover:border-primary/50'
                         }`}
                     >
                       {b}
@@ -542,7 +542,7 @@ const ExploreSearchPage = () => {
         )}
 
         {/* Results */}
-        <div className="mb-4 text-gray-500">
+        <div className="mb-4 text-muted-foreground">
           Found {sortedFilteredTrails.length} {sortedFilteredTrails.length === 1 ? 'adventure' : 'adventures'}
         </div>
 
@@ -558,17 +558,17 @@ const ExploreSearchPage = () => {
           </div>
         ) : (
           /* Sad Empty State */
-          <div className="text-center py-24 bg-gray-50 rounded-2xl border border-dashed border-gray-200 flex flex-col items-center justify-center">
-            <div className="bg-gray-100 p-4 rounded-full mb-4">
-              <Frown className="w-12 h-12 text-gray-400" />
+          <div className="text-center py-24 bg-card/80 rounded-2xl border border-dashed border-border flex flex-col items-center justify-center">
+            <div className="bg-muted p-4 rounded-full mb-4">
+              <Frown className="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No trails found</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <h3 className="text-lg font-medium text-foreground mb-1">No trails found</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
               We couldn't find any trails matching your current filters. Try adjusting your criteria or clearing some filters.
             </p>
             <button
               onClick={clearFilters}
-              className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium transition-colors"
+              className="px-6 py-2.5 bg-card/90 border border-border text-foreground rounded-xl hover:bg-muted font-medium transition-colors"
             >
               Clear all filters
             </button>
