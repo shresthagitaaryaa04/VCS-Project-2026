@@ -7,6 +7,18 @@ import Input from './Input';
 import LoadingSpinner from './LoadingSpinner';
 import { Link, useNavigate } from 'react-router-dom';
 
+const getTodayDateValue = () => new Date().toISOString().slice(0, 10);
+const getAgeFromDob = (dobValue) => {
+  const birthDate = new Date(dobValue);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age -= 1;
+  }
+  return age;
+};
+
 const AuthModal = () => {
   const { isAuthModalOpen, authModalMode, setAuthModal, login, signup, isLoading, error } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
@@ -30,12 +42,15 @@ const AuthModal = () => {
 
   const validateForm = () => {
     const newErrors = {};
+    const today = getTodayDateValue();
     if (!email) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Please enter a valid email';
     if (!password) newErrors.password = 'Password is required';
     if (authModalMode === 'signup') {
       if (!name) newErrors.name = 'Full name is required';
       if (!dob) newErrors.dob = 'Date of birth is required';
+      else if (dob > today) newErrors.dob = 'Date of birth cannot be in the future';
+      else if (getAgeFromDob(dob) < 14) newErrors.dob = 'You must be at least 14 years old to sign up';
       if (!phone) newErrors.phone = 'Phone number is required';
       if (!district) newErrors.district = 'District is required';
       if (!province) newErrors.province = 'Province is required';
@@ -133,8 +148,12 @@ const AuthModal = () => {
                       <Input
                         type="date" id="modal-dob" label="Date of Birth"
                         value={dob} onChange={e => { setDob(e.target.value); if (formErrors.dob) setFormErrors({ ...formErrors, dob: undefined }); }}
+                        max={getTodayDateValue()}
                         icon={<Calendar className="w-5 h-5" />} error={formErrors.dob}
                       />
+                      <p className="col-span-2 -mt-1 text-[11px] text-gray-500">
+                        You must be at least 14 years old to sign up.
+                      </p>
                       <Input
                         type="tel" id="modal-phone" label="Phone"
                         value={phone} onChange={e => { setPhone(e.target.value); if (formErrors.phone) setFormErrors({ ...formErrors, phone: undefined }); }}

@@ -240,11 +240,11 @@ export default function TrailMap({ geoJson, startLocation }) {
   const endName = startLocation?.end || 'End';
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative flex h-full w-full flex-col overflow-hidden rounded-lg">
 
       {/* Map tiles — clipped to container */}
-      <div className="absolute inset-0 overflow-hidden rounded-lg">
-        <MapContainer center={c} zoom={13} className="h-full w-full" style={{ zIndex: 0 }}>
+      <div className="relative min-h-[320px] flex-1 overflow-hidden rounded-lg">
+        <MapContainer center={c} zoom={13} className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
           <LayersControl position="topright">
             <LayersControl.BaseLayer checked name="Street">
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="© OpenStreetMap contributors" />

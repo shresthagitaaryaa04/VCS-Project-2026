@@ -9,12 +9,25 @@ import { stat } from "fs";
 
 export const signup = async (req, res) => {
     const { email, password, name, dob, phone, province, district, gender } = req.body;
+    const dobDate = dob ? new Date(dob) : null;
+    const calculateAge = (birthDate) => {
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age -= 1;
+        }
+        return age;
+    };
 
     try {
         if (!email) throw new Error("Email is required");
         if (!password) throw new Error("Password is required");
         if (!name) throw new Error("Full name is required");
         if (!dob) throw new Error("Date of Birth is required");
+        if (!dobDate || Number.isNaN(dobDate.getTime())) throw new Error("Date of Birth is invalid");
+        if (dobDate > new Date()) throw new Error("Date of Birth cannot be in the future");
+        if (calculateAge(dobDate) < 14) throw new Error("You must be at least 14 years old to sign up");
         if (!phone) throw new Error("Phone is required");
         if (!province) throw new Error("Province is required");
         if (!district) throw new Error("District is required");
