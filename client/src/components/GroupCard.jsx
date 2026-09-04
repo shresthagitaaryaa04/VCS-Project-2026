@@ -31,10 +31,20 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
     'Very Difficult': 'text-red-700 bg-red-50',
   };
 
-  const handleJoinGroup = () => {
-    if (!isFull) {
-      setHasJoined(!hasJoined);
-      if (onJoin) onJoin(group._id || group.id);
+  const handleJoinGroup = (e) => {
+    e?.stopPropagation();
+    if (!isFull && onJoin) {
+      onJoin(group._id || group.id);
+    }
+  };
+
+  const handleViewDetails = (e) => {
+    e?.stopPropagation();
+    const targetId = group._id || group.id;
+    if (onViewDetails) {
+      onViewDetails(targetId);
+    } else if (targetId) {
+      navigate(`/groups/${targetId}`);
     }
   };
 
@@ -129,7 +139,7 @@ const GroupCard = ({ group, onJoin, onViewDetails, onOpenChat, onDelete, isMembe
         {/* Buttons */}
         <div className="flex flex-col gap-2">
           <button
-            onClick={() => navigate(`/groups/${group._id}`)}
+            onClick={handleViewDetails}
             className="w-full flex items-center justify-center gap-2 font-medium py-2.5 rounded-lg transition bg-muted hover:bg-muted/80 text-foreground text-sm"
           >
             <Eye size={15} />

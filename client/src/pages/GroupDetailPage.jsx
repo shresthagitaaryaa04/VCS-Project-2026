@@ -98,17 +98,17 @@ export default function GroupDetailPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
       <Loader className="animate-spin text-green-600 mr-3" size={32} />
-      <p className="text-gray-600 text-lg">Loading group...</p>
+      <p className="text-muted-foreground text-lg">Loading group...</p>
     </div>
   );
 
   if (error || !group) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 gap-4">
-      <AlertCircle size={48} className="text-red-400" />
-      <p className="text-gray-700 text-lg">{error || 'Group not found'}</p>
-      <button onClick={() => navigate('/groups')} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground gap-4 p-4">
+      <AlertCircle size={48} className="text-red-500" />
+      <p className="text-foreground text-lg font-medium">{error || 'Group not found'}</p>
+      <button onClick={() => navigate('/groups')} className="px-5 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium transition-colors">
         Back to Groups
       </button>
     </div>

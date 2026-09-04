@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Group } from "../models/group.model.js";
 import { Conversation } from "../models/conversation.model.js";
 import { Trail } from "../models/trailModel.js";
@@ -307,6 +308,13 @@ export const getGroupById = async (req, res) => {
     try {
         const { groupId } = req.params;
 
+        if (!mongoose.Types.ObjectId.isValid(groupId)) {
+            return res.status(404).json({
+                success: false,
+                message: "Group not found"
+            });
+        }
+
         const group = await Group.findById(groupId)
             .populate('creator', 'name email profileImage')
             .populate('members.userId', 'name email profileImage');
@@ -319,8 +327,8 @@ export const getGroupById = async (req, res) => {
         }
 
         const userId = req.userId;
-        const isMember = group.isMember(userId);
-        const isCreator = group.isCreator(userId);
+        const isMember = userId ? group.isMember(userId) : false;
+        const isCreator = userId ? group.isCreator(userId) : false;
 
         res.status(200).json({
             success: true,
@@ -360,6 +368,13 @@ export const joinGroup = async (req, res) => {
         const userId = req.userId;
         const { groupId } = req.params;
 
+        if (!mongoose.Types.ObjectId.isValid(groupId)) {
+            return res.status(404).json({
+                success: false,
+                message: "Group not found"
+            });
+        }
+
         const group = await Group.findById(groupId);
 
         if (!group) {
@@ -385,23 +400,27 @@ export const joinGroup = async (req, res) => {
             });
         }
 
+        const userObjId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
+
         // Add user to group
         group.members.push({
-            userId,
+            userId: userObjId,
             joinedAt: new Date()
         });
         await group.save();
 
         // Add user to group conversation
-        const conversation = await Conversation.findById(group.conversationId);
-        if (conversation && !conversation.participants.includes(userId)) {
-            conversation.participants.push(userId);
-            await conversation.save();
+        if (group.conversationId) {
+            const conversation = await Conversation.findById(group.conversationId);
+            if (conversation && !conversation.participants.some(p => p.toString() === userId.toString())) {
+                conversation.participants.push(userObjId);
+                await conversation.save();
+            }
         }
 
         // Populate for response
-        await group.populate('creator', 'name email');
-        await group.populate('members.userId', 'name email');
+        await group.populate('creator', 'name email profileImage');
+        await group.populate('members.userId', 'name email profileImage');
 
         res.status(200).json({
             success: true,
@@ -493,14 +512,26 @@ export const leaveGroup = async (req, res) => {
 export const getUserGroups = async (req, res) => {
     try {
         const userId = req.userId;
-        const { status = 'active' } = req.query;
+        const { status } = req.query;
 
-        const groups = await Group.find({
-            'members.userId': userId,
-            status
-        })
-            .populate('creator', 'name email')
-            .populate('members.userId', 'name email')
+        const userObjId = mongoose.Types.ObjectId.isValid(userId) ? new mongoose.Types.ObjectId(userId) : userId;
+
+        const query = {
+            $or: [
+                { 'members.userId': userObjId },
+                { 'members.userId': userId },
+                { creator: userObjId },
+                { creator: userId }
+            ]
+        };
+
+        if (status) {
+            query.status = { $in: [status, null, undefined] };
+        }
+
+        const groups = await Group.find(query)
+            .populate('creator', 'name email profileImage')
+            .populate('members.userId', 'name email profileImage')
             .sort({ createdAt: -1 });
 
         const formattedGroups = groups.map(group => ({
@@ -513,6 +544,7 @@ export const getUserGroups = async (req, res) => {
             maxMembers: group.maxMembers,
             memberCount: group.members.length,
             creator: group.creator,
+            members: group.members,
             status: group.status,
             tags: group.tags,
             isFull: group.isFull(),

@@ -7,6 +7,7 @@ import ProfileCard from '../components/ProfileCard';
 import { useAuthStore } from '../store/authStore';
 import { useAuthGuard } from '../hooks/useAuthGuard';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 export default function GroupsPage() {
   const navigate = useNavigate();
@@ -309,8 +310,31 @@ export default function GroupsPage() {
     }
   };
 
+  // Check if current user is member of a group
+  const isUserMember = (group) => {
+    if (!user || !group) return false;
+    const currentUserId = String(user._id || user.id);
+    const targetGroupId = String(group._id || group.id);
+    if (userGroups.some(ug => String(ug._id || ug.id) === targetGroupId)) return true;
+    if (group.members && Array.isArray(group.members)) {
+      return group.members.some(m => {
+        const mId = m?.userId?._id || m?.userId;
+        return mId && String(mId) === currentUserId;
+      });
+    }
+    if (group.creator) {
+      const cId = group.creator?._id || group.creator;
+      if (cId && String(cId) === currentUserId) return true;
+    }
+    return false;
+  };
+
   // Handle join group
   const handleJoinGroup = async (groupId) => {
+    if (!canPerformAction('join a group')) {
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -322,10 +346,16 @@ export default function GroupsPage() {
         credentials: 'include'
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to join group');
+        throw new Error(data.message || 'Failed to join group');
       }
+
+      toast.success(data.message || 'Joined group successfully! 🎉', {
+        position: 'bottom-right',
+        style: { background: '#1a472a', color: '#fff' }
+      });
 
       // Refresh both lists so the group moves from Browse to My Groups
       await fetchAllGroups();
@@ -334,6 +364,7 @@ export default function GroupsPage() {
       setError('');
     } catch (err) {
       console.error('Error joining group:', err);
+      toast.error(err.message || 'Failed to join group', { position: 'bottom-right' });
       setError(err.message || 'Failed to join group');
     } finally {
       setLoading(false);
@@ -400,6 +431,13 @@ export default function GroupsPage() {
     fetchSuggestedFriends();
     fetchTrails();
   }, []);
+
+  // Re-fetch user groups when switching to My Groups tab
+  useEffect(() => {
+    if (activeTab === 'my-groups') {
+      fetchUserGroups();
+    }
+  }, [activeTab]);
 
   // Filtered groups for Browse tab: exclude user's groups, apply trail filter & search
   const filteredGroups = useMemo(() => {
@@ -606,10 +644,11 @@ export default function GroupsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredGroups.map(group => (
                   <GroupCard
-                    key={group._id}
+                    key={group._id || group.id}
                     group={group}
                     onJoin={handleJoinGroup}
-                    isMember={false}
+                    onOpenChat={handleOpenChat}
+                    isMember={isUserMember(group)}
                   />
                 ))}
               </div>

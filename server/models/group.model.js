@@ -79,12 +79,21 @@ groupSchema.virtual('memberCount').get(function() {
 
 // Check if user is a member
 groupSchema.methods.isMember = function(userId) {
-    return this.members.some(m => m.userId.toString() === userId.toString());
+    if (!userId) return false;
+    const targetId = userId.toString();
+    return this.members.some(m => {
+        if (!m || !m.userId) return false;
+        const mId = m.userId._id ? m.userId._id.toString() : m.userId.toString();
+        return mId === targetId;
+    });
 };
 
 // Check if user is the creator
 groupSchema.methods.isCreator = function(userId) {
-    return this.creator.toString() === userId.toString();
+    if (!userId || !this.creator) return false;
+    const targetId = userId.toString();
+    const cId = this.creator._id ? this.creator._id.toString() : this.creator.toString();
+    return cId === targetId;
 };
 
 // Check if group is full
