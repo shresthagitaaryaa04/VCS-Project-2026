@@ -19,9 +19,26 @@ import recommendationRoutes from './routes/recommendation.route.js'
 dotenv.config();
 const app = express();
 const httpServer = createServer(app);
+
+app.set("trust proxy", 1);
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:4173",
+].filter(Boolean);
+
+const corsOrigin = (origin, callback) => {
+  if (!origin) return callback(null, true);
+  if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+    return callback(null, true);
+  }
+  return callback(null, false);
+};
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: corsOrigin,
     credentials: true
   }
 });
@@ -31,7 +48,15 @@ app.set("io", io);
 
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: corsOrigin, credentials: true }));
+
+app.get("/", (req, res) => {
+  res.json({ ok: true, service: "trek-sathi-api" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true });
+});
 
 app.use(express.json()); //allows to parse incoming request :req.body
 app.use(cookieParser()); //to parse cookies from request
