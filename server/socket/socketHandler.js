@@ -12,7 +12,15 @@ export const initializeSocket = (io) => {
     // Socket.IO authentication middleware
     io.use((socket, next) => {
         try {
-            let token = socket.handshake.auth.token;
+            let token = socket.handshake.auth?.token || socket.handshake.query?.token;
+
+            // If no token, check authorization header
+            if (!token && socket.handshake.headers?.authorization) {
+                const authHeader = socket.handshake.headers.authorization;
+                if (authHeader.startsWith('Bearer ')) {
+                    token = authHeader.slice(7);
+                }
+            }
 
             // If no token in auth, try to get from cookies
             if (!token && socket.handshake.headers.cookie) {

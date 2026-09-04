@@ -73,12 +73,13 @@ export const signup = async (req, res) => {
         await userProfile.save();
 
         //jwt 
-        generateTokenAndSetCookie(res, user._id);
+        const token = generateTokenAndSetCookie(res, user._id);
         await sendVerificationEmail(user.email, verificationToken, user.realName || user.name);
 
         res.status(201).json({
             success: true,
             message: "User created successfully",
+            token,
             user: {
                 ...user._doc,
                 ...userProfile._doc,
@@ -111,11 +112,13 @@ export const verifyEmail = async (req, res) => {
         await user.save();
 
         const userProfile = await UserProfile.findOne({ userId: user._id });
+        const token = generateTokenAndSetCookie(res, user._id);
 
         await sendWelcomeEmail(user.email, user.name)
         res.status(200).json({
             success: true,
             message: "email verified sucessfully",
+            token,
             user: {
                 ...user._doc,
                 ...(userProfile ? userProfile._doc : {}),
@@ -141,7 +144,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ sucess: false, message: "Invlaid credentials" });
         }
 
-        generateTokenAndSetCookie(res, user._id);
+        const token = generateTokenAndSetCookie(res, user._id);
         user.lastLogin = new Date();
         await user.save();
 
@@ -150,6 +153,7 @@ export const login = async (req, res) => {
         res.status(200).json({
             sucess: true,
             message: "Logged in sucessfully",
+            token,
             user: {
                 ...user._doc,
                 ...userProfile?._doc,
@@ -242,9 +246,11 @@ export const checkAuth = async (req, res) => {
         }
 
         const userProfile = await UserProfile.findOne({ userId: req.userId });
+        const token = req.token || req.cookies?.token || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
 
         res.status(200).json({
             sucess: true,
+            token: token || undefined,
             user: {
                 ...user._doc,
                 ...(userProfile ? userProfile._doc : {}),

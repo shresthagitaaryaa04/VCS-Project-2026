@@ -32,11 +32,16 @@ export const SocketProvider = ({ children }) => {
         }
 
         // Create socket connection
-        const serverUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const serverUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, "");
+        const token = localStorage.getItem('token');
 
         const newSocket = io(serverUrl, {
+            auth: {
+                token: token
+            },
             query: {
-                userId: user._id
+                userId: user._id,
+                token: token
             },
             withCredentials: true,
             transports: ['websocket', 'polling']

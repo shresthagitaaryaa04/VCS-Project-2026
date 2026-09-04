@@ -22,6 +22,7 @@ export const verifyToken = (req, res, next) => {
             return res.status(401).json({ message: "Invalid token" });
         }
         req.userId = decoded.userId;
+        req.token = token;
         next();
     } catch (error) {
         console.log("error in verifyToken middleware", error.message);

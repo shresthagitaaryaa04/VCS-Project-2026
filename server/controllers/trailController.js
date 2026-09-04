@@ -54,6 +54,7 @@ export const getAllTrails = async (req, res) => {
             // const imageUrl = imagesMap.get(trailId);
 
             const card = {
+                _id: t._id,
                 id: t._id,
                 name: t.name,
                 difficulty: t.difficulty,

@@ -22,18 +22,28 @@ const httpServer = createServer(app);
 
 app.set("trust proxy", 1);
 
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, "") : "";
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  clientUrl,
+  "https://trek-sathi-nine.vercel.app",
   "http://localhost:5173",
   "http://localhost:4173",
+  "http://localhost:3000",
 ].filter(Boolean);
 
 const corsOrigin = (origin, callback) => {
   if (!origin) return callback(null, true);
-  if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+  const cleanOrigin = origin.replace(/\/$/, "");
+  if (
+    allowedOrigins.includes(cleanOrigin) ||
+    cleanOrigin.endsWith(".vercel.app") ||
+    cleanOrigin.includes("localhost") ||
+    cleanOrigin.includes("127.0.0.1")
+  ) {
     return callback(null, true);
   }
-  return callback(null, false);
+  return callback(null, true);
 };
 
 const io = new Server(httpServer, {

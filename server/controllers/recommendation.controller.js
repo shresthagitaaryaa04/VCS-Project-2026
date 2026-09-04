@@ -21,6 +21,7 @@ function triggerPythonRecomputeCompanions(userId) {
 // Normalize a raw Trail doc to the same shape as getAllTrails returns
 function normalizeTrail(t, reason = "") {
     return {
+        _id: t._id,
         id: t._id,
         name: t.name,
         difficulty: t.difficulty,

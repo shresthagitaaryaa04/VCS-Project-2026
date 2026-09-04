@@ -79,25 +79,50 @@ const HomePage = ({ userName = "Traveler" }) => {
             axios.get('/api/recommendations/trails'),
             axios.get('/api/recommendations/companions'),
           ]);
-          if (trailsResult.status === 'fulfilled') trailList = trailsResult.value.data.trails || [];
-          else { console.error('Rec trails fetch failed:', trailsResult.reason); setError('Failed to load trails. Please try again.'); }
-          if (companionsResult.status === 'fulfilled') {
+
+          if (trailsResult.status === 'fulfilled' && trailsResult.value?.data?.trails?.length > 0) {
+            trailList = trailsResult.value.data.trails;
+          } else {
+            console.warn('Rec trails unavailable, falling back to /api/trails:', trailsResult.reason || 'empty');
+            try {
+              const fallback = await axios.get('/api/trails');
+              trailList = fallback.data || [];
+            } catch (fbErr) {
+              console.error('Fallback trails failed:', fbErr);
+            }
+          }
+
+          if (companionsResult.status === 'fulfilled' && companionsResult.value?.data?.companions?.length > 0) {
             userList = (companionsResult.value.data.companions || []).map(u => ({
               ...u, _id: u._id || u.id, id: u._id || u.id, name: u.name || 'Trekker', province: u.province || 'Nepal', district: u.district || 'Unknown',
             }));
-          } else console.error('Companions fetch failed:', companionsResult.reason);
+          } else {
+            console.warn('Rec companions unavailable, falling back to /api/users:', companionsResult.reason || 'empty');
+            try {
+              const fallback = await axios.get('/api/users');
+              userList = (fallback.data || []).map(u => ({
+                ...u, _id: u._id || u.id, id: u._id || u.id, name: u.name || 'Trekker', province: u.province || 'Nepal', district: u.district || 'Unknown',
+              }));
+            } catch (fbErr) {
+              console.error('Fallback users failed:', fbErr);
+            }
+          }
         } else {
           const [trailsResult, usersResult] = await Promise.allSettled([
             axios.get('/api/trails'),
             axios.get('/api/users'),
           ]);
           if (trailsResult.status === 'fulfilled') trailList = trailsResult.value.data || [];
-          else { console.error('Trails fetch failed:', trailsResult.reason); setError('Failed to load trails. Please try again.'); }
+          else { console.error('Trails fetch failed:', trailsResult.reason); }
           if (usersResult.status === 'fulfilled') {
             userList = (usersResult.value.data || []).map(u => ({
               ...u, _id: u._id || u.id, id: u._id || u.id, name: u.name || 'Trekker', province: u.province || 'Nepal', district: u.district || 'Unknown',
             }));
           } else console.error('Users fetch failed:', usersResult.reason);
+        }
+
+        if (trailList.length === 0 && !authUser) {
+          setError('Failed to load trails. Please check your connection.');
         }
 
         const withCachedImages = trailList.map(t => {
