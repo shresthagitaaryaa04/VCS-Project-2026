@@ -60,6 +60,21 @@ export const acceptFriendRequest = async (req, res) => {
 
         await UserRelationship.acceptRequest(accepterId, senderId);
 
+        // Notify original requester via socket
+        try {
+            const io = req.app.get("io");
+            if (io) {
+                const accepterName = await getDisplayName(accepterId);
+                io.to(senderId.toString()).emit("friend_request_accepted", {
+                    userId: accepterId,
+                    name: accepterName,
+                    message: `${accepterName} accepted your friend request! 🎉`
+                });
+            }
+        } catch (socketErr) {
+            console.error("Error sending socket notification:", socketErr);
+        }
+
         // Return the updated friends list
         const friends = await UserRelationship.getFriends(accepterId);
 

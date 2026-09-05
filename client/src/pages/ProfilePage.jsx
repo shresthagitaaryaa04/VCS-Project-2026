@@ -10,6 +10,7 @@ import ProfilePastHikes from '../components/profile/ProfilePastHikes';
 import ProfileSavedHikes from '../components/profile/ProfileSavedHikes';
 import ProfileFriends from '../components/profile/ProfileFriends';
 import ProfileFriendRequests from '../components/profile/ProfileFriendRequests';
+import { toast } from 'react-hot-toast';
 
 function ProfilePage() {
   const { id } = useParams();
@@ -116,10 +117,17 @@ function ProfilePage() {
         // Refresh friends list
         const friendsRes = await axios.get('/api/friends/');
         if (friendsRes.data.success) setFriends(friendsRes.data.friends || []);
+
+        toast.success("Friend request accepted! 🎉", {
+          position: 'bottom-right',
+          style: { background: '#1a472a', color: '#fff' }
+        });
       }
     } catch (error) {
       console.error("Failed to accept friend request:", error);
-      alert("Failed to accept friend request");
+      toast.error(error.response?.data?.message || "Failed to accept friend request", {
+        position: 'bottom-right'
+      });
     }
   };
 
@@ -132,10 +140,13 @@ function ProfilePage() {
           setPendingRequests(next.length);
           return next;
         });
+        toast.success("Friend request declined", { position: 'bottom-right' });
       }
     } catch (error) {
       console.error("Failed to reject friend request:", error);
-      alert("Failed to reject friend request");
+      toast.error(error.response?.data?.message || "Failed to reject friend request", {
+        position: 'bottom-right'
+      });
     }
   };
 
@@ -145,10 +156,13 @@ function ProfilePage() {
       const response = await axios.delete(`/api/friends/${friendId}`);
       if (response.data.success) {
         setFriends(response.data.friends || []);
+        toast.success("Friend removed", { position: 'bottom-right' });
       }
     } catch (error) {
       console.error("Failed to remove friend:", error);
-      alert("Failed to remove friend");
+      toast.error(error.response?.data?.message || "Failed to remove friend", {
+        position: 'bottom-right'
+      });
     }
   };
 
@@ -162,15 +176,24 @@ function ProfilePage() {
           setFriendStatus('friends');
           const friendsRes = await axios.get('/api/friends/');
           if (friendsRes.data.success) setFriends(friendsRes.data.friends || []);
+          toast.success("Friend request accepted! 🎉", {
+            position: 'bottom-right',
+            style: { background: '#1a472a', color: '#fff' }
+          });
         }
       } else {
         // Send new request
         const response = await axios.post('/api/friends/request', { receiverId: user._id });
-        if (response.data.success) setFriendStatus('request_sent');
+        if (response.data.success) {
+          setFriendStatus('request_sent');
+          toast.success("Friend request sent! 🤝", { position: 'bottom-right' });
+        }
       }
     } catch (error) {
-      const msg = error.response?.data?.message || 'Failed to send friend request';
-      alert(msg);
+      console.error("Failed to update friend status:", error);
+      toast.error(error.response?.data?.message || "Failed to perform friend action", {
+        position: 'bottom-right'
+      });
     }
   };
 

@@ -3,6 +3,7 @@ import { io } from 'socket.io-client';
 import { useAuthStore } from '../store/authStore';
 import useChatStore from '../store/useChatStore';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const SocketContext = createContext(null);
 
@@ -137,12 +138,22 @@ export const SocketProvider = ({ children }) => {
             useChatStore.getState().removeOnlineUser(userId);
         };
 
+        const handleFriendRequestAccepted = (data) => {
+            const name = data.name || data.senderName || 'Someone';
+            toast.success(`${name} accepted your friend request! 🎉`, {
+                position: 'bottom-right',
+                duration: 5000,
+                style: { background: '#1a472a', color: '#fff' }
+            });
+        };
+
         socket.on('new_message', handleNewMessage);
         socket.on('conversation_updated', handleConversationUpdated);
         socket.on('user_typing', handleTyping);
         socket.on('online_users', handleOnlineUsers);
         socket.on('user_online', handleUserOnline);
         socket.on('user_offline', handleUserOffline);
+        socket.on('friend_request_accepted', handleFriendRequestAccepted);
 
         fetchConversations();
 
@@ -153,6 +164,7 @@ export const SocketProvider = ({ children }) => {
             socket.off('online_users', handleOnlineUsers);
             socket.off('user_online', handleUserOnline);
             socket.off('user_offline', handleUserOffline);
+            socket.off('friend_request_accepted', handleFriendRequestAccepted);
         };
     }, [socket]);
 
