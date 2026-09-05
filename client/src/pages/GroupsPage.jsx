@@ -387,10 +387,11 @@ export default function GroupsPage() {
           ...prev,
           [userId]: 'request_sent'
         }));
+        toast.success(`Friend request sent to ${userName || 'trekker'}! 🤝`, { position: 'bottom-right' });
       }
     } catch (error) {
       console.error("Failed to send friend request:", error);
-      alert(error.response?.data?.message || "Failed to send friend request");
+      toast.error(error.response?.data?.message || "Failed to send friend request", { position: 'bottom-right' });
     }
   };
 
@@ -410,10 +411,14 @@ export default function GroupsPage() {
           ...prev,
           [userId]: 'friends'
         }));
+        toast.success(`You are now friends with ${userName || 'this trekker'}! 🎉`, {
+          position: 'bottom-right',
+          style: { background: '#1a472a', color: '#fff' }
+        });
       }
     } catch (error) {
       console.error("Failed to accept friend request:", error);
-      alert("Failed to accept friend request");
+      toast.error(error.response?.data?.message || "Failed to accept friend request", { position: 'bottom-right' });
     }
   };
 

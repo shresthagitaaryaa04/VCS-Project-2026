@@ -15,6 +15,7 @@ import friendRoutes from './routes/friend.route.js'
 import groupRoutes from './routes/group.route.js'
 import { initializeSocket } from './socket/socketHandler.js';
 import recommendationRoutes from './routes/recommendation.route.js'
+import { deleteExpiredGroups } from './controllers/group.controller.js';
 
 dotenv.config();
 const app = express();
@@ -102,6 +103,10 @@ const startServer = async () => {
     // Initialize Socket.IO
     initializeSocket(io);
     console.log('Socket.IO initialized');
+
+    // Clean up expired groups on boot and schedule periodic cleanup (every 30 mins)
+    await deleteExpiredGroups();
+    setInterval(deleteExpiredGroups, 30 * 60 * 1000);
 
     httpServer.listen(PORT, () => {
       console.log(`Server listening on port ${PORT}`)

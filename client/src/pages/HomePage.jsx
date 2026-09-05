@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 import { useAuthGuard } from '../hooks/useAuthGuard';
+import { toast } from 'react-hot-toast';
 
 const HomePage = ({ userName = "Traveler" }) => {
   const navigate = useNavigate();
@@ -60,10 +61,16 @@ const HomePage = ({ userName = "Traveler" }) => {
       const response = await axios.post('/api/friends/accept', { senderId: userId, senderName: userName });
       if (response.data.success) {
         setFriendStatuses(prev => ({ ...prev, [userId]: 'friends' }));
+        toast.success(`You are now friends with ${userName || 'this trekker'}! 🎉`, {
+          position: 'bottom-right',
+          style: { background: '#1a472a', color: '#fff' }
+        });
       }
     } catch (error) {
       console.error("Failed to accept friend request:", error);
-      alert("Failed to accept friend request");
+      toast.error(error.response?.data?.message || "Failed to accept friend request", {
+        position: 'bottom-right'
+      });
     }
   };
 

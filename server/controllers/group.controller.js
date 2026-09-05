@@ -1,8 +1,35 @@
 import mongoose from "mongoose";
 import { Group } from "../models/group.model.js";
 import { Conversation } from "../models/conversation.model.js";
+import { Message } from "../models/message.model.js";
 import { Trail } from "../models/trailModel.js";
 import { User } from "../models/user.model.js";
+
+// Helper to automatically delete groups whose trek date has passed
+export const deleteExpiredGroups = async () => {
+    try {
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const expiredGroups = await Group.find({
+            trekDate: { $lt: startOfToday }
+        });
+
+        if (expiredGroups.length > 0) {
+            console.log(`🧹 Found ${expiredGroups.length} expired group(s). Cleaning up...`);
+            for (const group of expiredGroups) {
+                if (group.conversationId) {
+                    await Conversation.findByIdAndDelete(group.conversationId);
+                    await Message.deleteMany({ conversationId: group.conversationId });
+                }
+                await Group.findByIdAndDelete(group._id);
+            }
+            console.log(`✅ Successfully deleted ${expiredGroups.length} expired group(s).`);
+        }
+    } catch (error) {
+        console.error("Error in deleteExpiredGroups:", error);
+    }
+};
 
 export const createGroup = async (req, res) => {
     try {
@@ -140,6 +167,7 @@ export const createGroup = async (req, res) => {
 // Get all groups with optional filters
 export const getAllGroups = async (req, res) => {
     try {
+        await deleteExpiredGroups();
         const { trailId, status = 'active', limit = 20, page = 1 } = req.query;
         const skip = (page - 1) * limit;
 
@@ -197,6 +225,7 @@ export const getAllGroups = async (req, res) => {
 // Search groups by trail name or group name
 export const searchGroups = async (req, res) => {
     try {
+        await deleteExpiredGroups();
         const { search, status = 'active', limit = 20, page = 1 } = req.query;
 
         if (!search) {
@@ -259,6 +288,7 @@ export const searchGroups = async (req, res) => {
 // Get groups by trail ID
 export const getGroupsByTrail = async (req, res) => {
     try {
+        await deleteExpiredGroups();
         const { trailId, status = 'active' } = req.query;
 
         if (!trailId) {
@@ -306,6 +336,7 @@ export const getGroupsByTrail = async (req, res) => {
 // Get a single group by ID
 export const getGroupById = async (req, res) => {
     try {
+        await deleteExpiredGroups();
         const { groupId } = req.params;
 
         if (!mongoose.Types.ObjectId.isValid(groupId)) {
@@ -511,6 +542,7 @@ export const leaveGroup = async (req, res) => {
 // Get groups the current user is part of
 export const getUserGroups = async (req, res) => {
     try {
+        await deleteExpiredGroups();
         const userId = req.userId;
         const { status } = req.query;
 
